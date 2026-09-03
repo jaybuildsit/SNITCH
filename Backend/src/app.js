@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
+// Base Route
 app.get("/", (req, res) => {
   res.json({
     status: "success",
@@ -19,4 +19,3 @@ app.get("/", (req, res) => {
 });
 
 export default app;
-
