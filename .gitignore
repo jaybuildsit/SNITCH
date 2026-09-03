@@ -1,8 +1,9 @@
 # =======================================
-# Dependencies
+# Dependencies (Root & Subfolders)
 # =======================================
 node_modules/
 **/node_modules/
+package-lock.json
 jspm_packages/
 web_modules/
 .pnp
