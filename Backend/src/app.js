@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -17,5 +18,7 @@ app.get("/", (req, res) => {
     message: "Server is running smoothly",
   });
 });
+
+app.use("/api/auth", authRoutes);
 
 export default app;
