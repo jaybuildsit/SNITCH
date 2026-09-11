@@ -2,7 +2,6 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-    "main": "server.js",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,6 +13,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cookieparser": "^0.1.0",
     "dotenv": "^17.4.2",
