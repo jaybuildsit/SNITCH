@@ -48,6 +48,6 @@ userSchema.methods.comparePassword=async function(password){
 }
 
 const userModel = mongoose.model('User',userSchema);
-const sellerModel = mongoose.model('Seller',sellerSchema);
+// const sellerModel = mongoose.model('Seller',sellerSchema);
 
-export { userModel, sellerModel };
+export { userModel };
