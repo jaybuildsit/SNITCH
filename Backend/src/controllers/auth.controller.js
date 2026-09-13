@@ -27,7 +27,7 @@ async function sendtokenResponse(user, res, message) {
 
 export const register = async (req, res) => {
 
-    const { email, contact, password, fullName } = req.body;
+    const { email, contact, password, fullName, isSeller } = req.body;
 
     try {
 
@@ -46,7 +46,8 @@ export const register = async (req, res) => {
             email,
             contact,
             password,
-            fullName
+            fullName,
+            role: isSeller ? "seller" : "buyer"
 
         })
 
