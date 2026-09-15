@@ -64,3 +64,4 @@ export const register = async (req, res) => {
 }
 
 
+//Changes to be made in the login function to send token in cookie and response body
