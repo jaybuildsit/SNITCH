@@ -100,6 +100,6 @@ export const googleCallback=async(req,res)=>{
     
     console.log(req.user);
 
-    res.redirect("http://localhost:5174/dashboard");
+    res.redirect("http://localhost:5174/");
 
 }
