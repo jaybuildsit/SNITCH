@@ -4,6 +4,7 @@ import { config } from "../config/config.js";
 
 
 
+
 async function sendtokenResponse(user, res, message) {
     const token = jwt.sign(
         { id: user._id },
@@ -91,5 +92,14 @@ export const login = async (req, res) => {
     }
 
     await sendtokenResponse(user, res, "Login successful");
+
+}
+
+
+export const googleCallback=async(req,res)=>{
+    
+    console.log(req.user);
+
+    res.redirect("http://localhost:5174/dashboard");
 
 }

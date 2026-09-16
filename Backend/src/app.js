@@ -3,10 +3,17 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import cors from "cors";
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { config } from "./config/config.js";
+
+
+
+
+// const passport = require('passport');
 
 const app = express();
 
-// Middlewares
 app.use(morgan("dev"));
 app.use(
   cors({
@@ -18,6 +25,21 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
+app.use(passport.initialize());
+passport.use(new GoogleStrategy(
+  {
+    clientID: config.GOOGLE_CLIENT_ID,
+    clientSecret: config.GOOGLE_CLIENT_SECRET,
+    callbackURL: config.GOOGLE_CALLBACK_URL,
+  },
+  (accessToken, refreshToken, profile, done) => {
+    console.log("Google profile:", profile);
+    return done(null, profile);
+  }
+));
+
 
 // Base Route
 app.get("/", (req, res) => {

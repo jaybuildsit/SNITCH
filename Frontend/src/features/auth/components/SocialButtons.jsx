@@ -11,9 +11,11 @@ export const SocialButtons = () => {
 
       <div className="grid grid-cols-2 gap-3">
         {/* Google Button */}
-        <button
+          <button   
+          onClick={() => window.location.href = "/api/auth/google"}
           type="button"
           className="w-full h-11 px-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-slate-700 text-sm font-semibold flex items-center justify-center gap-2.5 transition-all duration-200 shadow-2xs hover:shadow-xs active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer"
+          
         >
           <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
             <path
