@@ -4,10 +4,12 @@ import PasswordInput from './PasswordInput';
 import SellerCheckbox from './SellerCheckbox';
 import SocialButtons from './SocialButtons';
 import { useAuth } from '../hook/useAuth';  
+import { useNavigate } from 'react-router';
 
 export const RegisterForm = () => {
 
   const {handleRegister}= useAuth();
+  const navigate=useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -138,6 +140,7 @@ export const RegisterForm = () => {
           password: formData.password,
           isSeller: formData.isSeller,
         });
+        navigate("/")
         setSubmitFeedback({
           type: 'success',
           message: 'Account created successfully! Welcome to SNITCH.',
