@@ -22,3 +22,13 @@ export async function register({
 
   return response.data;
 }
+
+export async function login({ email, password }) {
+  const response = await authApi.post("/login", {
+    email,
+    password,
+  });
+
+  return response.data;
+}
+

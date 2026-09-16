@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FormInput from './FormInput';
 import PasswordInput from './PasswordInput';
 import SellerCheckbox from './SellerCheckbox';
@@ -7,9 +7,8 @@ import { useAuth } from '../hook/useAuth';
 import { useNavigate } from 'react-router';
 
 export const RegisterForm = () => {
-
-  const {handleRegister}= useAuth();
-  const navigate=useNavigate();
+  const { handleRegister } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -22,15 +21,6 @@ export const RegisterForm = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitFeedback, setSubmitFeedback] = useState(null);
-
-  // Safe integration with existing useAuth hook
-  let authHook = null;
-  try {
-    authHook = useAuth();
-  } catch (err) {
-    // Redux Provider or hook fallback
-    console.warn('useAuth hook fallback:', err);
-  }
 
   const validateField = (name, value) => {
     let error = '';
@@ -132,15 +122,15 @@ export const RegisterForm = () => {
     setIsSubmitting(true);
 
     try {
-      if (authHook && typeof authHook.handleRegister === 'function') {
-        await authHook.handleRegister({
+      if (typeof handleRegister === 'function') {
+        await handleRegister({
           fullName: formData.fullName,
           email: formData.email,
           contact: formData.contact,
           password: formData.password,
           isSeller: formData.isSeller,
         });
-        navigate("/")
+        navigate("/login")
         setSubmitFeedback({
           type: 'success',
           message: 'Account created successfully! Welcome to SNITCH.',
@@ -320,12 +310,13 @@ export const RegisterForm = () => {
       <div className="mt-6 text-center">
         <p className="text-sm text-slate-600">
           Already have an account?{' '}
-          <a
-            href="/login"
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-150 inline-flex items-center gap-0.5"
+          <button
+            type="button"
+            onClick={() => navigate('/login')}
+            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-150 inline-flex items-center gap-0.5 cursor-pointer"
           >
             Sign in
-          </a>
+          </button>
         </p>
       </div>
 

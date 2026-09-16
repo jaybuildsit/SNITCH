@@ -2,28 +2,7 @@ import { userModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
-// async function sendtokenResponse(user, res, message) {
-//     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
-//         expiresIn: "7d",
-//     })
 
-
-//     res.cookie("token", token,)
-
-//     res.status(200).json({
-//         message,
-//         success: true,
-//         user: {
-//             id: user._id,
-//             email: user.email,
-//             contact: user.contact,
-//             fullName: user.fullName,
-//             role: user.role
-//         }
-//     })
-
-
-// }
 
 async function sendtokenResponse(user, res, message) {
     const token = jwt.sign(

@@ -1,6 +1,4 @@
-import React from "react";
-
-const featureCards = [
+const defaultRegisterFeatureCards = [
   {
     id: 1,
     title: "Discover what you love",
@@ -21,7 +19,6 @@ const featureCards = [
       </svg>
     ),
   },
-
   {
     id: 2,
     title: "Shop with confidence",
@@ -42,7 +39,6 @@ const featureCards = [
       </svg>
     ),
   },
-
   {
     id: 3,
     title: "Sell and grow",
@@ -65,7 +61,108 @@ const featureCards = [
   },
 ];
 
-export const BrandPanel = () => {
+const loginFeatureCards = [
+  {
+    id: 1,
+    title: "Discover what you love",
+    description: "Explore products from brands and sellers worth knowing.",
+    icon: (
+      <svg
+        className="w-4 h-4 text-indigo-100"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      >
+        <circle cx="11" cy="11" r="6.5" />
+        <path
+          strokeLinecap="round"
+          d="m16 16 5 5"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 2,
+    title: "Shop with confidence",
+    description: "A simple and seamless experience from discovery to checkout.",
+    icon: (
+      <svg
+        className="w-4 h-4 text-indigo-100"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-1 5h13m-9-5v5m4-5v5"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 3,
+    title: "Your marketplace, your way",
+    description: "Shop your favorites or grow your business with SNITCH.",
+    icon: (
+      <svg
+        className="w-4 h-4 text-indigo-100"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 10h18M5 10v9h14v-9M7 10V6h10v4M9 19v-5h6v5"
+        />
+      </svg>
+    ),
+  },
+];
+
+export const BrandPanel = ({
+  variant = "register",
+  eyebrow,
+  headline,
+  subheading,
+  cards,
+  footerPhrase = "Shop. Sell. Discover.",
+}) => {
+  const isLogin = variant === "login";
+
+  const resolvedEyebrow =
+    eyebrow || (isLogin ? "WELCOME BACK TO SNITCH" : "WELCOME TO SNITCH");
+
+  const resolvedHeadline =
+    headline ||
+    (isLogin ? (
+      <>
+        Shop smarter.
+        <br />
+        Discover more.
+      </>
+    ) : (
+      <>
+        Discover more.
+        <br />
+        Shop smarter.
+        <br />
+        Sell better.
+      </>
+    ));
+
+  const resolvedSubheading =
+    subheading ||
+    (isLogin
+      ? "Sign in to continue discovering products, managing your orders, and growing your marketplace experience."
+      : "Discover products you love, shop with confidence, and grow your business — all in one marketplace.");
+
+  const resolvedCards =
+    cards || (isLogin ? loginFeatureCards : defaultRegisterFeatureCards);
   return (
     <div className="relative flex h-full min-h-full w-full flex-col justify-between overflow-hidden bg-gradient-to-br from-[#101a46] via-[#1b1c5a] to-[#342078] px-8 py-8 sm:px-12 sm:py-10 lg:px-16 lg:py-12">
       
@@ -162,26 +259,21 @@ export const BrandPanel = () => {
         {/* Heading */}
         <div className="space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-200">
-            WELCOME TO SNITCH
+            {resolvedEyebrow}
           </p>
 
           <h1 className="max-w-lg text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[52px]">
-            Discover more.
-            <br />
-            Shop smarter.
-            <br />
-            Sell better.
+            {resolvedHeadline}
           </h1>
 
           <p className="max-w-lg text-base leading-7 text-indigo-100/75 sm:text-lg">
-            Discover products you love, shop with confidence, and grow your
-            business — all in one marketplace.
+            {resolvedSubheading}
           </p>
         </div>
 
         {/* Feature Cards */}
-        <div className="hidden space-y-3 sm:block">
-          {featureCards.map((card) => (
+        <div className="hidden sm:block space-y-3">
+          {resolvedCards.map((card) => (
             <div
               key={card.id}
               className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.09]"
@@ -214,7 +306,7 @@ export const BrandPanel = () => {
           <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
 
           <span className="font-medium">
-            Shop. Sell. Discover.
+            {footerPhrase}
           </span>
         </div>
       </div>
