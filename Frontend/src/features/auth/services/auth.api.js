@@ -1,12 +1,24 @@
 import axios from "axios";
 
+const authApi = axios.create({
+  baseURL: "http://localhost:3000/api/auth",
+  withCredentials: true,
+});
 
-const authApi=axios.create({
-    baseURL:"http:localhost:3000/api/auth",
-    withCredentials:true
-})
+export async function register({
+  email,
+  contact,
+  password,
+  fullName,
+  isSeller,
+}) {
+  const response = await authApi.post("/register", {
+    email,
+    contact,
+    password,
+    fullName,
+    isSeller,
+  });
 
-export async function register({email,contact,password,fullname,isSeller}){
-    const response = await authApi.post("/register",{email,contact,password,fullname,isSeller})
-    return response.data;   
+  return response.data;
 }

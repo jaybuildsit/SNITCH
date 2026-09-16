@@ -3,9 +3,12 @@ import FormInput from './FormInput';
 import PasswordInput from './PasswordInput';
 import SellerCheckbox from './SellerCheckbox';
 import SocialButtons from './SocialButtons';
-import { useAuth } from '../hook/useAuth';
+import { useAuth } from '../hook/useAuth';  
 
 export const RegisterForm = () => {
+
+  const {handleRegister}= useAuth();
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -129,7 +132,7 @@ export const RegisterForm = () => {
     try {
       if (authHook && typeof authHook.handleRegister === 'function') {
         await authHook.handleRegister({
-          fullname: formData.fullName,
+          fullName: formData.fullName,
           email: formData.email,
           contact: formData.contact,
           password: formData.password,

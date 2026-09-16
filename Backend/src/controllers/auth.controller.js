@@ -2,13 +2,44 @@ import { userModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
+// async function sendtokenResponse(user, res, message) {
+//     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
+//         expiresIn: "7d",
+//     })
+
+
+//     res.cookie("token", token,)
+
+//     res.status(200).json({
+//         message,
+//         success: true,
+//         user: {
+//             id: user._id,
+//             email: user.email,
+//             contact: user.contact,
+//             fullName: user.fullName,
+//             role: user.role
+//         }
+//     })
+
+
+// }
+
 async function sendtokenResponse(user, res, message) {
-    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
-    })
+    const token = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "7d",
+        }
+    );
 
-
-    res.cookie("token", token,)
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
         message,
@@ -18,11 +49,9 @@ async function sendtokenResponse(user, res, message) {
             email: user.email,
             contact: user.contact,
             fullName: user.fullName,
-            role: user.role
-        }
-    })
-
-
+            role: user.role,
+        },
+    });
 }
 
 export const register = async (req, res) => {
@@ -44,12 +73,14 @@ export const register = async (req, res) => {
 
         const user = await userModel.create({
             email,
-            contact,
+            contact: {
+                number: contact,
+                country: "IN",
+            },
             password,
             fullName,
-            role: isSeller ? "seller" : "buyer"
-
-        })
+            role: isSeller ? "seller" : "buyer",
+        });
 
         await sendtokenResponse(user, res, "User registered successfully");
 
@@ -64,4 +95,3 @@ export const register = async (req, res) => {
 }
 
 
-//Changes to be made in the login function to send token in cookie and response body

@@ -4,7 +4,7 @@ import { register } from "../controllers/auth.controller.js";
 
 const router = Router();
 
-router.post('/regsiter', registerValidator, register);
+router.post('/register', registerValidator, register);
 
 
 
