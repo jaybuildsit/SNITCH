@@ -406,4 +406,3 @@ export default LoginForm;
 // Login form futher will be updated into better ui and with minimal and modern ui 
 
 
-// 1. Add a "Remember Me" checkbox to the login form, allowing users to stay logged in for a longer period of time.

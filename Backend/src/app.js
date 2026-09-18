@@ -17,7 +17,7 @@ const app = express();
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -28,6 +28,7 @@ app.use(cookieParser());
 
 
 app.use(passport.initialize());
+console.log("GOOGLE CALLBACK:", config.GOOGLE_CALLBACK_URL);
 passport.use(new GoogleStrategy(
   {
     clientID: config.GOOGLE_CLIENT_ID,
