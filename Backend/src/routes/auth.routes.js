@@ -1,9 +1,13 @@
 import jwt from "jsonwebtoken";
 import { Router } from "express";
-import { registerValidator , loginValidator } from "../validator/auth.validator.js";
-import { register,login } from "../controllers/auth.controller.js";
+import { registerValidator, loginValidator } from "../validator/auth.validator.js";
+import { googleCallback, register, login } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { config } from "../config/config.js";
+
+
+
+
 
 const router = Router();
 
@@ -17,7 +21,7 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    session: false,
+    session: false, failureRedirect:config.NODE_ENV === "development" ? "http://localhost:5173/login" : "/login",
   }),
   (req, res) => {
     const token = jwt.sign(
@@ -38,7 +42,7 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect("http://localhost:5173/");
+    res.redirect("http://localhost:5173/",);
   }
 );
 

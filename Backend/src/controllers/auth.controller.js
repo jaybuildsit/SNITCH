@@ -96,10 +96,37 @@ export const login = async (req, res) => {
 }
 
 
-export const googleCallback=async(req,res)=>{
-    
-    console.log(req.user);
+export const googleCallback = async (req, res) => {
+
+    const { id, displayName, emails } = req.user;
 
     res.redirect("http://localhost:5173/");
 
+    let user = await userModel.findOne({ email });
+
+    if (!user) {
+        const newUser = await userModel.create({
+            emails,
+            googleId: id,
+            fullName: displayName,
+
+        })
+
+        const token = jwt.sign({
+            id: user._id,
+        },
+            config.JWT_SECRET, {
+            expiresIn: "7d"
+        }
+        )
+
+        res.cookie("token", token)
+
+        res.redirect("http://localhost:5173/");
+
+
+        await sendtokenResponse(newUser, res, "User registered and logged in successfully");
+    } else {
+        await sendtokenResponse(user, res, "User logged in successfully");
+    }
 }

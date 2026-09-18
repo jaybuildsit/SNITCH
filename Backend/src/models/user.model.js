@@ -6,16 +6,24 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     contact: {
         country: { type: String, required: true },
-        number: { type: String, required: true, unique: true }
+        number: { type: String, required: false, unique: true }
     },
-    password: { type: String, required: true },
+    password: { 
+        type: String, 
+        required: function() {
+            return !this.googleId; // Password is required only if googleId is not present
+        }
+     },
     fullName: { type: String, required: true },
     role: {
         type: String,
         enum: ['buyer', 'seller'],
         default: "buyer",
 
-    }
+    },
+    googleId: { 
+        type: String 
+    },
 })
 
 
