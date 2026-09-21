@@ -1,4 +1,3 @@
-
 export const SellerCheckbox = ({
   checked = false,
   onChange,
@@ -21,22 +20,22 @@ export const SellerCheckbox = ({
       role="checkbox"
       aria-checked={checked}
       tabIndex={0}
-      className={`group relative flex items-start gap-3.5 p-3.5 rounded-xl border transition-all duration-200 cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2 ${
+      className={`group relative flex items-start gap-3 p-3 rounded-md border transition-all duration-150 cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-1 ${
         checked
-          ? 'bg-indigo-50/60 border-indigo-200'
-          : 'bg-slate-50/60 border-slate-200/80 hover:bg-slate-50 hover:border-slate-300'
+          ? 'bg-neutral-50 border-neutral-800'
+          : 'bg-neutral-50/40 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50/80'
       }`}
     >
       <div className="pt-0.5 shrink-0">
         <div
-          className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all duration-200 ${
+          className={`w-4 h-4 rounded-[4px] flex items-center justify-center border transition-all duration-150 ${
             checked
-              ? 'bg-gradient-to-br from-indigo-600 to-violet-600 border-transparent shadow-sm'
-              : 'bg-white border-slate-300 group-hover:border-indigo-400 shadow-2xs'
+              ? 'bg-neutral-950 border-neutral-950 text-white'
+              : 'bg-white border-neutral-300 group-hover:border-neutral-400'
           }`}
         >
           <svg
-            className={`w-3.5 h-3.5 text-white stroke-[2.5] transition-transform duration-200 ${
+            className={`w-2.5 h-2.5 stroke-[2.5] transition-transform duration-150 ${
               checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
             }`}
             fill="none"
@@ -49,15 +48,11 @@ export const SellerCheckbox = ({
       </div>
 
       <div className="flex flex-col">
-        <span
-          className={`text-sm font-semibold transition-colors duration-150 ${
-            checked ? 'text-indigo-950' : 'text-slate-800'
-          }`}
-        >
-          I am a seller
+        <span className="text-[13px] font-medium text-neutral-900">
+          I'm registering as a seller
         </span>
-        <span className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-          Register as a seller on SNITCH to manage storefront and listings
+        <span className="text-[11px] text-neutral-400 font-normal mt-0.5 leading-snug">
+          Create and manage your brand listings in the SNITCH Seller Studio
         </span>
       </div>
 

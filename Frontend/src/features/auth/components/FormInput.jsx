@@ -16,18 +16,18 @@ export const FormInput = ({
 }) => {
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-1.5">
+      {label && (
         <label
           htmlFor={id}
-          className="block text-[11px] font-bold tracking-wider text-slate-700 uppercase select-none"
+          className="block text-[10px] font-semibold tracking-[0.14em] uppercase text-neutral-400 mb-2 select-none"
         >
           {label}
         </label>
-      </div>
+      )}
 
       <div className="relative flex items-center">
         {icon && (
-          <div className="absolute left-3.5 flex items-center justify-center pointer-events-none text-slate-400">
+          <div className="absolute left-3.5 flex items-center justify-center pointer-events-none text-neutral-300">
             {icon}
           </div>
         )}
@@ -42,21 +42,21 @@ export const FormInput = ({
           placeholder={placeholder}
           autoComplete={autoComplete}
           required={required}
-          className={`w-full h-[52px] bg-white text-slate-900 placeholder:text-slate-400 text-sm font-medium rounded-xl border transition-all duration-200 outline-none ${
-            icon ? 'pl-11 pr-4' : 'px-4'
+          className={`w-full px-3.5 py-[10px] text-[14px] bg-white border rounded-md text-neutral-900 placeholder:text-neutral-300 focus:outline-none transition-all duration-150 ${
+            icon ? 'pl-10' : 'pl-3.5'
           } ${
             error
-              ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/15 bg-red-50/10'
-              : 'border-slate-200 hover:border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/15'
+              ? 'border-rose-300 focus:border-rose-400 focus:ring-2 focus:ring-rose-100'
+              : 'border-neutral-200 hover:border-neutral-300 focus:border-neutral-800 focus:ring-2 focus:ring-neutral-100'
           }`}
           {...rest}
         />
       </div>
 
       {error && (
-        <p className="mt-1.5 text-xs font-medium text-red-500 flex items-center gap-1 animate-fadeIn">
+        <p className="mt-1.5 text-[11px] text-rose-500 flex items-center gap-1">
           <svg
-            className="w-3.5 h-3.5 shrink-0"
+            className="w-3 h-3 shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

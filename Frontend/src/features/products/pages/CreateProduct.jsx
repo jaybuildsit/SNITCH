@@ -132,8 +132,8 @@ export const CreateProduct = () => {
 
     if (!formData.name.trim()) {
       newErrors.name = 'Product name is required';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Product name must be at least 2 characters';
+    } else if (formData.name.trim().length < 4) {
+      newErrors.name = 'Product name must be at least 4  characters';
     }
 
     if (!formData.priceAmount || isNaN(Number(formData.priceAmount)) || Number(formData.priceAmount) <= 0) {

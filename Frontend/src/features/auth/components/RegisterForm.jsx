@@ -3,7 +3,7 @@ import FormInput from './FormInput';
 import PasswordInput from './PasswordInput';
 import SellerCheckbox from './SellerCheckbox';
 import SocialButtons from './SocialButtons';
-import { useAuth } from '../hook/useAuth';  
+import { useAuth } from '../hook/useAuth';
 import { useNavigate } from 'react-router';
 
 export const RegisterForm = () => {
@@ -174,11 +174,10 @@ export const RegisterForm = () => {
       {/* Global submit feedback banner if triggered */}
       {submitFeedback && (
         <div
-          className={`mb-6 p-4 rounded-xl text-sm font-medium border flex items-start gap-3 transition-all duration-200 ${
-            submitFeedback.type === 'success'
+          className={`mb-6 p-4 rounded-xl text-sm font-medium border flex items-start gap-3 transition-all duration-200 ${submitFeedback.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
               : 'bg-amber-50 text-amber-800 border-amber-200'
-          }`}
+            }`}
         >
           <div className="pt-0.5 shrink-0">
             {submitFeedback.type === 'success' ? (
@@ -280,60 +279,103 @@ export const RegisterForm = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-13 px-6 rounded-xl font-bold text-white text-base tracking-wide bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:via-indigo-500 hover:to-purple-500 active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed shadow-md hover:shadow-lg shadow-indigo-600/25 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer outline-none focus:ring-4 focus:ring-indigo-500/20"
+          className="
+    group
+    flex
+    h-[46px]
+    w-full
+    cursor-pointer
+    items-center
+    justify-center
+    gap-2
+    rounded-[6px]
+    bg-[#111111]
+    px-6
+    text-[12px]
+    font-medium
+    tracking-wide
+    text-white
+    outline-none
+    transition-all
+    duration-200
+    hover:bg-black
+    active:scale-[0.995]
+    disabled:cursor-not-allowed
+    disabled:opacity-50
+    focus-visible:ring-2
+    focus-visible:ring-black/20
+    focus-visible:ring-offset-2
+  "
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              <svg
+                className="h-3.5 w-3.5 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                />
+
+                <path
+                  className="opacity-80"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"
+                />
               </svg>
-              <span>Creating Account...</span>
+
+              <span>Creating account...</span>
             </>
           ) : (
             <>
-              <span>Create Account</span>
-              <span className="text-lg transition-transform duration-200 group-hover:translate-x-1">
+              <span>Create account</span>
+
+              <span className="text-[15px] transition-transform duration-200 group-hover:translate-x-0.5">
                 →
               </span>
             </>
           )}
         </button>
+        {/* SOCIAL LOGIN */}
+        <div className="mt-6">
+          <SocialButtons />
+        </div>
+
+        {/* LOGIN LINK */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-slate-600">
+            Already have an account?{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-150 inline-flex items-center gap-0.5 cursor-pointer"
+            >
+              Sign in
+            </button>
+          </p>
+        </div>
+
+        {/* LEGAL TEXT */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
+            By creating an account, you agree to our{' '}
+            <a href="#terms" className="text-slate-600 hover:text-slate-900 underline underline-offset-2 transition-colors">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="#privacy" className="text-slate-600 hover:text-slate-900 underline underline-offset-2 transition-colors">
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </div>
       </form>
-
-      {/* SOCIAL LOGIN */}
-      <div className="mt-6">
-        <SocialButtons />
-      </div>
-
-      {/* LOGIN LINK */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-slate-600">
-          Already have an account?{' '}
-          <button
-            type="button"
-            onClick={() => navigate('/login')}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-150 inline-flex items-center gap-0.5 cursor-pointer"
-          >
-            Sign in
-          </button>
-        </p>
-      </div>
-
-      {/* LEGAL TEXT */}
-      <div className="mt-8 text-center">
-        <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
-          By creating an account, you agree to our{' '}
-          <a href="#terms" className="text-slate-600 hover:text-slate-900 underline underline-offset-2 transition-colors">
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="#privacy" className="text-slate-600 hover:text-slate-900 underline underline-offset-2 transition-colors">
-            Privacy Policy
-          </a>
-          .
-        </p>
-      </div>
     </div>
   );
 };

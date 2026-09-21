@@ -158,37 +158,44 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-[460px] mx-auto py-8 sm:py-12 px-6 sm:px-8 flex flex-col justify-center min-h-full">
-      {/* Login Header */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-purple-50 text-purple-700 border border-purple-100 mb-3.5">
-          <span>WELCOME BACK</span>
+    <div className="w-full max-w-[400px] mx-auto py-10 px-6 sm:px-8 flex flex-col justify-center min-h-full">
+      {/* Editorial Header */}
+      <div className="mb-7">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-neutral-950">
+            SNITCH
+          </span>
+          <span className="text-neutral-300 text-xs select-none">·</span>
+          <span className="text-[10px] font-medium tracking-[0.14em] uppercase text-neutral-400">
+            Account
+          </span>
         </div>
-        <h2 className="text-3xl sm:text-[38px] font-extrabold text-slate-900 tracking-tight leading-tight">
+
+        <h1 className="text-[26px] sm:text-[30px] font-semibold tracking-[-0.02em] text-neutral-950 leading-tight">
           Welcome back.
-        </h2>
-        <p className="text-slate-500 text-sm sm:text-base mt-2 leading-relaxed">
+        </h1>
+        <p className="text-[13px] text-neutral-400 mt-1.5 font-normal leading-relaxed">
           Sign in to your SNITCH account to continue.
         </p>
       </div>
 
-      {/* Global submit feedback banner if triggered */}
+      {/* Global submit feedback banner */}
       {submitFeedback && (
         <div
-          className={`mb-6 p-4 rounded-xl text-sm font-medium border flex items-start gap-3 transition-all duration-200 ${
+          className={`mb-6 px-4 py-3 rounded-md text-[13px] border flex items-start gap-2.5 transition-all duration-150 ${
             submitFeedback.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              ? 'bg-neutral-50 text-neutral-900 border-neutral-200'
               : 'bg-rose-50 text-rose-800 border-rose-200'
           }`}
         >
           <div className="pt-0.5 shrink-0">
             {submitFeedback.type === 'success' ? (
-              <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              <svg className="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             ) : (
-              <svg className="w-5 h-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg className="w-3.5 h-3.5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
             )}
           </div>
@@ -210,11 +217,6 @@ export const LoginForm = () => {
           onBlur={handleBlur}
           error={errors.email}
           autoComplete="email"
-          icon={
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-            </svg>
-          }
         />
 
         {/* PASSWORD */}
@@ -232,7 +234,7 @@ export const LoginForm = () => {
 
         {/* REMEMBER ME & FORGOT PASSWORD ROW */}
         <div className="flex items-center justify-between pt-1 pb-1">
-          <label className="flex items-center gap-2.5 cursor-pointer select-none group">
+          <label className="flex items-center gap-2 cursor-pointer select-none group">
             <input
               type="checkbox"
               id="rememberMe"
@@ -241,9 +243,9 @@ export const LoginForm = () => {
               onChange={handleChange}
               className="sr-only peer"
             />
-            <div className="w-4 h-4 rounded-md border border-slate-300 bg-white peer-checked:bg-indigo-600 peer-checked:border-indigo-600 peer-focus:ring-2 peer-focus:ring-indigo-500/20 flex items-center justify-center transition-all duration-150 shadow-2xs group-hover:border-indigo-400">
+            <div className="w-3.5 h-3.5 rounded-[3px] border border-neutral-300 bg-white peer-checked:bg-neutral-950 peer-checked:border-neutral-950 flex items-center justify-center transition-all duration-150 group-hover:border-neutral-400">
               <svg
-                className={`w-3 h-3 text-white fill-none stroke-current stroke-[2.5] transition-opacity duration-150 ${
+                className={`w-2.5 h-2.5 text-white fill-none stroke-current stroke-[2.5] transition-opacity duration-150 ${
                   formData.rememberMe ? 'opacity-100' : 'opacity-0'
                 }`}
                 viewBox="0 0 24 24"
@@ -251,7 +253,7 @@ export const LoginForm = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span className="text-xs sm:text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
+            <span className="text-[12px] text-neutral-500 group-hover:text-neutral-900 transition-colors">
               Remember me
             </span>
           </label>
@@ -259,100 +261,78 @@ export const LoginForm = () => {
           <button
             type="button"
             onClick={handleForgotPassword}
-            className="text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20 rounded"
+            className="text-[12px] font-medium text-neutral-500 hover:text-neutral-950 hover:underline transition-colors duration-150 cursor-pointer focus:outline-none"
           >
             Forgot password?
           </button>
         </div>
 
         {/* PRIMARY CTA BUTTON */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full h-13 px-6 rounded-xl font-bold text-white text-base tracking-wide bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:via-indigo-500 hover:to-purple-500 active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed shadow-md hover:shadow-lg shadow-indigo-600/25 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer outline-none focus:ring-4 focus:ring-indigo-500/20 group mt-2"
-        >
-          {isSubmitting ? (
-            <>
-              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              <span>Signing In...</span>
-            </>
-          ) : (
-            <>
-              <span>Sign In</span>
-              <span className="text-lg transition-transform duration-200 group-hover:translate-x-1">
-                →
-              </span>
-            </>
-          )}
-        </button>
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full h-[42px] px-6 rounded-md bg-neutral-950 text-white text-[13px] font-medium tracking-[0.04em] transition-all duration-200 hover:bg-neutral-800 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900"
+          >
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin h-3.5 w-3.5 text-white/70" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span className="text-white/80">Signing in...</span>
+              </>
+            ) : (
+              <span>Sign in</span>
+            )}
+          </button>
+        </div>
       </form>
 
       {/* SOCIAL LOGIN */}
-      <div className="mt-6">
+      <div className="mt-5">
         <SocialButtons />
       </div>
 
       {/* SIGN UP LINK */}
       <div className="mt-6 text-center">
-        <p className="text-sm text-slate-600">
+        <p className="text-[13px] text-neutral-500">
           Don't have an account?{' '}
           <button
             type="button"
             onClick={() => navigate('/register')}
-            className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors duration-150 inline-flex items-center gap-0.5 cursor-pointer focus:outline-none"
+            className="font-medium text-neutral-950 hover:underline transition-colors duration-150 cursor-pointer focus:outline-none"
           >
-            Sign up
+            Create account
           </button>
-        </p>
-      </div>
-
-      {/* LEGAL TEXT */}
-      <div className="mt-8 text-center">
-        <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
-          By continuing, you agree to our{' '}
-          <a href="#terms" className="text-slate-600 hover:text-slate-900 underline underline-offset-2 transition-colors">
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="#privacy" className="text-slate-600 hover:text-slate-900 underline underline-offset-2 transition-colors">
-            Privacy Policy
-          </a>
-          .
         </p>
       </div>
 
       {/* FORGOT PASSWORD MODAL */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-xs animate-fadeIn">
-          <div className="relative w-full max-w-md bg-white rounded-2xl p-6 sm:p-7 shadow-2xl border border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/40 backdrop-blur-xs">
+          <div className="relative w-full max-w-sm bg-white rounded-lg p-6 shadow-xl border border-neutral-200">
             <button
               type="button"
               onClick={() => setShowForgotModal(false)}
-              className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+              className="absolute top-4 right-4 p-1 text-neutral-400 hover:text-neutral-700 rounded transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-4">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-              </svg>
-            </div>
-
-            <h3 className="text-xl font-bold text-slate-900">Reset your password</h3>
-            <p className="text-sm text-slate-500 mt-1 mb-5">
-              Enter your email address and we'll send you a link to reset your password.
+            <h3 className="text-[18px] font-semibold tracking-[-0.01em] text-neutral-950">
+              Reset password
+            </h3>
+            <p className="text-[13px] text-neutral-400 mt-1 mb-5">
+              Enter your email address and we'll send you a recovery link.
             </p>
 
             {forgotSubmitted ? (
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-center gap-2.5">
-                <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              <div className="p-3 rounded-md bg-neutral-50 border border-neutral-200 text-neutral-800 text-[13px] font-medium flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <span>Reset link sent! Please check your inbox.</span>
               </div>
@@ -368,23 +348,18 @@ export const LoginForm = () => {
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  icon={
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                    </svg>
-                  }
                 />
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex items-center justify-end gap-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowForgotModal(false)}
-                    className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                    className="px-3 py-2 rounded-md text-[13px] font-normal text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-md text-[13px] font-medium text-white bg-neutral-950 hover:bg-neutral-800 transition-colors cursor-pointer"
                   >
                     Send Reset Link
                   </button>
@@ -399,10 +374,3 @@ export const LoginForm = () => {
 };
 
 export default LoginForm;
-
-
-
-
-// Login form futher will be updated into better ui and with minimal and modern ui 
-
-
