@@ -9,9 +9,10 @@ const FALLBACK_IMAGE =
 const Home = () => {
   const navigate = useNavigate();
 
-  const products = useSelector(
-    (state) => state.product.Products
-  ) || [];
+  const products =
+    useSelector((state) => state.product.Products) || [];
+
+  const user = useSelector((state) => state.auth.user);
 
   const { handleGetAllProducts } = useProduct();
 
@@ -19,8 +20,8 @@ const Home = () => {
     handleGetAllProducts();
   }, []);
 
-  const getImage = (product, index = 0) => {
-    return product?.images?.[index]?.url || FALLBACK_IMAGE;
+  const getImage = (product) => {
+    return product?.images?.[0]?.url || FALLBACK_IMAGE;
   };
 
   const formatPrice = (product) => {
@@ -35,52 +36,62 @@ const Home = () => {
     }).format(amount);
   };
 
-  const openProduct = (product) => {
-    navigate(`/products/${product._id}`);
+  const getUserName = () => {
+    if (!user) return "Guest";
+
+    return (
+      user.fullName ||
+      user.name ||
+      user.email?.split("@")[0] ||
+      "User"
+    );
   };
 
-  const featured = products.slice(0, 3);
-  const newProducts = products.slice(0, 4);
-  const collectionProducts = products.slice(0, 6);
-
   return (
-    <main className="min-h-screen bg-[#f5f5f2] text-[#111111]">
+    <main className="min-h-screen bg-[#f8f8f6] text-[#111]">
 
       {/* =====================================================
           HEADER
       ===================================================== */}
-      <header className="sticky top-0 z-50 border-b border-black/10 bg-[#f5f5f2]/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-[64px] max-w-[1440px] items-center justify-between px-6 md:px-10">
 
-          {/* Left */}
-          <div className="flex items-center gap-8">
+      <header className="border-b border-black/10 bg-[#f8f8f6]">
 
+        <div className="mx-auto flex h-[68px] max-w-[1400px] items-center justify-between px-6 md:px-10">
+
+          {/* LEFT */}
+          <div className="flex items-center gap-10">
+
+            {/* Menu */}
             <button
-              className="group flex h-9 w-9 items-center justify-center"
               aria-label="Menu"
+              className="group flex h-8 w-8 flex-col items-center justify-center gap-[5px]"
             >
-              <div className="flex w-[18px] flex-col gap-[5px]">
-                <span className="h-[1px] w-full bg-black transition-all duration-300 group-hover:w-[12px]" />
-                <span className="h-[1px] w-[12px] bg-black transition-all duration-300 group-hover:w-full" />
-              </div>
+              <span className="h-[1px] w-[17px] bg-black transition-all duration-300 group-hover:w-[11px]" />
+              <span className="h-[1px] w-[11px] bg-black transition-all duration-300 group-hover:w-[17px]" />
             </button>
 
-            <nav className="hidden items-center gap-7 text-[10px] font-medium uppercase tracking-[0.18em] md:flex">
-              <button className="transition-opacity hover:opacity-50">
-                Home
+            {/* Navigation */}
+            <nav className="hidden items-center gap-8 md:flex">
+
+              <button className="text-[10px] font-medium uppercase tracking-[0.16em]">
+                Men
               </button>
 
-              <button className="transition-opacity hover:opacity-50">
-                Collections
+              <button className="text-[10px] font-medium uppercase tracking-[0.16em] text-black/45 transition-colors hover:text-black">
+                Women
               </button>
 
-              <button className="transition-opacity hover:opacity-50">
-                New
+              <button className="text-[10px] font-medium uppercase tracking-[0.16em] text-black/45 transition-colors hover:text-black">
+                New Arrivals
               </button>
+
             </nav>
+
           </div>
 
-          {/* Logo */}
+
+          {/* CENTER LOGO */}
+
           <button
             onClick={() => navigate("/")}
             className="absolute left-1/2 -translate-x-1/2 text-[22px] font-black tracking-[-0.08em]"
@@ -88,12 +99,16 @@ const Home = () => {
             SNITCH
           </button>
 
-          {/* Right */}
+
+          {/* RIGHT */}
+
           <div className="flex items-center gap-3">
 
+            {/* Search */}
+
             <button
-              className="hidden h-9 w-9 items-center justify-center rounded-full bg-[#151515] text-white sm:flex"
-              aria-label="Account"
+              aria-label="Search"
+              className="hidden h-9 w-9 items-center justify-center rounded-full border border-black/10 transition-all hover:bg-black hover:text-white sm:flex"
             >
               <svg
                 width="14"
@@ -103,503 +118,375 @@ const Home = () => {
                 stroke="currentColor"
                 strokeWidth="1.5"
               >
-                <circle cx="12" cy="8" r="3.5" />
-                <path d="M5 21c.8-4 3.2-6 7-6s6.2 2 7 6" />
+                <circle cx="11" cy="11" r="6" />
+                <path d="m16 16 5 5" />
               </svg>
             </button>
 
+
+            {/* LOGGED IN USER */}
+
+            <div className="hidden items-center gap-2 border-l border-black/10 pl-4 sm:flex">
+
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-[9px] font-medium uppercase text-white">
+                {getUserName().charAt(0)}
+              </div>
+
+              <div className="hidden leading-none lg:block">
+
+                <p className="mb-1 text-[8px] uppercase tracking-[0.16em] text-black/35">
+                  Signed in as
+                </p>
+
+                <p className="max-w-[100px] truncate text-[10px] font-medium">
+                  {getUserName()}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* CART */}
+
             <button
-              className="flex h-9 items-center gap-2 rounded-full bg-[#151515] px-4 text-[9px] font-medium uppercase tracking-[0.15em] text-white transition-transform hover:scale-[1.03]"
               onClick={() => navigate("/cart")}
+              className="flex h-9 items-center gap-2 rounded-full bg-black px-4 text-[9px] font-medium uppercase tracking-[0.15em] text-white transition-transform hover:scale-[1.03]"
             >
               Cart
+
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[8px] text-black">
                 0
               </span>
+
             </button>
+
           </div>
+
         </div>
+
       </header>
 
 
       {/* =====================================================
-          CATEGORY / SEARCH
+          MOBILE USER BAR
       ===================================================== */}
-      <section className="mx-auto flex max-w-[1440px] items-start justify-between px-6 pt-8 md:px-10">
 
-        <div className="flex flex-col gap-1 text-[10px] uppercase tracking-[0.16em]">
-          <button className="text-left font-semibold">Men</button>
-          <button className="text-left text-black/45 hover:text-black">Women</button>
-          <button className="text-left text-black/45 hover:text-black">Kids</button>
-        </div>
+      <div className="border-b border-black/10 px-6 py-3 sm:hidden">
 
-        <button className="hidden w-[230px] items-center justify-between border-b border-black/20 pb-2 text-[9px] uppercase tracking-[0.18em] text-black/50 sm:flex">
-          <span className="flex items-center gap-3">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <circle cx="11" cy="11" r="6" />
-              <path d="m16 16 5 5" />
-            </svg>
-            Search
+        <div className="flex items-center justify-between">
+
+          <div className="flex items-center gap-2">
+
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-[8px] uppercase text-white">
+              {getUserName().charAt(0)}
+            </div>
+
+            <div>
+
+              <p className="text-[7px] uppercase tracking-[0.16em] text-black/35">
+                Signed in as
+              </p>
+
+              <p className="text-[9px] font-medium">
+                {getUserName()}
+              </p>
+
+            </div>
+
+          </div>
+
+          <span className="text-[8px] uppercase tracking-[0.15em] text-black/35">
+            SNITCH
           </span>
 
-          <span>⌕</span>
-        </button>
-      </section>
+        </div>
+
+      </div>
 
 
       {/* =====================================================
           HERO
       ===================================================== */}
-      <section className="mx-auto max-w-[1440px] px-6 pb-28 pt-16 md:px-10 md:pt-20">
 
-        <div className="grid min-h-[580px] grid-cols-1 gap-4 md:grid-cols-[0.8fr_1.45fr_0.8fr]">
+      <section className="mx-auto max-w-[1400px] px-6 pb-24 pt-20 md:px-10 md:pt-28">
 
-          {/* Hero copy */}
-          <div className="flex flex-col justify-between py-3">
+        <div className="grid items-end gap-12 md:grid-cols-2">
 
-            <div>
-              <p className="mb-5 text-[9px] uppercase tracking-[0.25em] text-black/45">
-                SNITCH / 2026
-              </p>
+          {/* TEXT */}
 
-              <h1 className="max-w-[420px] text-[58px] font-black uppercase leading-[0.82] tracking-[-0.075em] sm:text-[72px] md:text-[78px] lg:text-[92px]">
-                New
-                <br />
-                Collection
-              </h1>
+          <div>
 
-              <p className="mt-6 max-w-[230px] text-[11px] leading-5 text-black/55">
-                Pieces designed for the way you move.
-                <br />
-                Discover the latest from SNITCH.
-              </p>
-            </div>
+            <p className="mb-6 text-[9px] font-medium uppercase tracking-[0.25em] text-black/40">
+              SNITCH / NEW SEASON
+            </p>
+
+            <h1 className="max-w-[700px] text-[64px] font-black uppercase leading-[0.8] tracking-[-0.075em] sm:text-[85px] md:text-[100px] lg:text-[120px]">
+              Discover
+              <br />
+              What&apos;s
+              <br />
+              Next.
+            </h1>
+
+          </div>
+
+
+          {/* RIGHT INFO */}
+
+          <div className="flex flex-col items-start justify-end md:items-end">
+
+            <p className="max-w-[300px] text-left text-[11px] leading-5 text-black/50 md:text-right">
+              A new selection of pieces built around
+              clean silhouettes, everyday movement
+              and a different way of dressing.
+            </p>
 
             <button
-              onClick={() => {
+              onClick={() =>
                 document
-                  .getElementById("new-this-week")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="group flex w-[180px] items-center justify-between border border-black px-4 py-3 text-[9px] uppercase tracking-[0.18em] transition-all duration-300 hover:bg-black hover:text-white"
+                  .getElementById("all-products")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              className="group mt-7 flex items-center gap-8 border-b border-black pb-2 text-[9px] font-medium uppercase tracking-[0.18em]"
             >
-              Shop collection
+              Shop New Arrivals
 
-              <span className="text-base transition-transform duration-300 group-hover:translate-x-1">
+              <span className="text-lg transition-transform duration-300 group-hover:translate-x-2">
                 →
               </span>
+
             </button>
+
           </div>
 
-
-          {/* Main hero image */}
-          <div
-            className="group relative min-h-[420px] cursor-pointer overflow-hidden bg-[#e9e9e5] md:min-h-0"
-            onClick={() => featured[0] && openProduct(featured[0])}
-          >
-            <img
-              src={"https://images.unsplash.com/photo-1541519481457-763224276691?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
-                
-              alt={featured[0]?.title || "SNITCH collection"}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
-            />
-
-            <div className="absolute left-5 top-5">
-              <span className="bg-white/90 px-3 py-2 text-[8px] uppercase tracking-[0.2em]">
-                Featured
-              </span>
-            </div>
-
-            <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-white">
-              <div>
-                <p className="text-[8px] uppercase tracking-[0.2em] opacity-70">
-                  Latest drop
-                </p>
-                <p className="mt-1 text-sm uppercase tracking-[0.04em]">
-                  {featured[0]?.title || "New Season"}
-                </p>
-              </div>
-
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black">
-                ↗
-              </span>
-            </div>
-          </div>
-
-
-          {/* Secondary hero */}
-          <div
-            className="group relative min-h-[420px] cursor-pointer overflow-hidden bg-[#e8e8e5] md:min-h-0"
-            onClick={() => featured[1] && openProduct(featured[1])}
-          >
-            <img
-              src={"https://images.unsplash.com/photo-1704208316515-a32f81e373ef?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
-              alt={featured[1]?.title || "SNITCH fashion"}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
-            />
-
-            <div className="absolute bottom-5 left-5">
-              <p className="text-[8px] uppercase tracking-[0.2em] text-white/70">
-                SNITCH
-              </p>
-
-              <p className="mt-1 max-w-[180px] text-sm uppercase text-white">
-                {featured[1]?.title || "Everyday essentials"}
-              </p>
-            </div>
-          </div>
         </div>
+
+
+        {/* HERO IMAGE STRIP */}
+
+        <div className="mt-16 aspect-[2.2/1] overflow-hidden bg-[#e9e9e6]">
+
+          {products[0] ? (
+            <img
+              src={getImage(products[0])}
+              alt={products[0]?.title || "SNITCH"}
+              className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.015]"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <span className="text-[9px] uppercase tracking-[0.2em] text-black/30">
+                SNITCH / NEW SEASON
+              </span>
+            </div>
+          )}
+
+        </div>
+
       </section>
 
 
       {/* =====================================================
-          NEW THIS WEEK
+          ALL PRODUCTS
       ===================================================== */}
-      <section
-        id="new-this-week"
-        className="border-t border-black/10 py-24"
-      >
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10">
 
-          <div className="mb-12 flex items-end justify-between">
+      <section
+        id="all-products"
+        className="border-t border-black/10"
+      >
+
+        <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
+
+
+          {/* SECTION HEADER */}
+
+          <div className="mb-14 flex items-end justify-between">
 
             <div>
+
               <p className="mb-4 text-[9px] uppercase tracking-[0.25em] text-black/40">
-                Just dropped
+                Explore the collection
               </p>
 
-              <h2 className="text-[48px] font-black uppercase leading-[0.82] tracking-[-0.07em] sm:text-[64px]">
-                New
+              <h2 className="text-[48px] font-black uppercase leading-[0.82] tracking-[-0.07em] sm:text-[68px]">
+                All
                 <br />
-                This Week
-                <sup className="ml-2 align-top text-[11px] font-medium tracking-normal">
-                  ({products.length})
-                </sup>
+                Products
               </h2>
+
             </div>
 
-            <button className="hidden text-[9px] uppercase tracking-[0.18em] underline underline-offset-4 sm:block">
-              See all
-            </button>
+
+            <p className="hidden text-[9px] uppercase tracking-[0.15em] text-black/40 sm:block">
+              {products.length} Products
+            </p>
+
           </div>
 
 
-          {/* Product grid */}
-          {newProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-x-3 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+          {/* PRODUCT GRID */}
 
-              {newProducts.map((product) => (
+          {products.length > 0 ? (
+
+            <div className="grid grid-cols-2 gap-x-3 gap-y-14 md:grid-cols-3 md:gap-x-5 md:gap-y-20">
+
+              {products.map((product) => (
+
                 <article
                   key={product._id}
-                  onClick={() => openProduct(product)}
+                  onClick={() =>
+                    navigate(`/products/${product._id}`)
+                  }
                   className="group cursor-pointer"
                 >
 
-                  <div className="relative aspect-[0.82] overflow-hidden bg-[#e9e9e7]">
+                  {/* IMAGE */}
+
+                  <div className="relative aspect-[0.78] overflow-hidden bg-[#ececea]">
 
                     <img
                       src={getImage(product)}
                       alt={product.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
                     />
 
-                    {/* Plus */}
+
+                    {/* NEW LABEL */}
+
+                    <span className="absolute left-3 top-3 text-[8px] font-medium uppercase tracking-[0.18em] text-black/45">
+                      New
+                    </span>
+
+
+                    {/* QUICK ADD */}
+
                     <button
-                      onClick={(e) => e.stopPropagation()}
-                      className="absolute bottom-3 left-1/2 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full bg-white text-lg font-light opacity-0 shadow-sm transition-all duration-300 group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="absolute bottom-4 left-1/2 flex h-10 w-10 -translate-x-1/2 translate-y-3 items-center justify-center rounded-full bg-white text-lg font-light opacity-0 shadow-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
                     >
                       +
                     </button>
 
-                    <span className="absolute left-3 top-3 text-[8px] uppercase tracking-[0.18em] text-black/50">
-                      New
-                    </span>
                   </div>
 
 
-                  <div className="mt-3 flex items-start justify-between gap-3">
+                  {/* PRODUCT INFO */}
+
+                  <div className="mt-4 flex items-start justify-between gap-4">
 
                     <div className="min-w-0">
-                      <p className="mb-1 truncate text-[8px] uppercase tracking-[0.15em] text-black/40">
+
+                      <p className="mb-1 text-[8px] uppercase tracking-[0.18em] text-black/35">
                         SNITCH
                       </p>
 
                       <h3 className="truncate text-[11px] font-medium uppercase tracking-[0.02em]">
                         {product.title}
                       </h3>
+
                     </div>
+
 
                     <p className="shrink-0 text-[10px] font-medium">
                       {formatPrice(product)}
                     </p>
+
                   </div>
 
                 </article>
+
               ))}
 
             </div>
+
           ) : (
-            <div className="flex min-h-[300px] items-center justify-center border border-black/10">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">
-                No products available
-              </p>
+
+            <div className="flex min-h-[350px] items-center justify-center border border-black/10">
+
+              <div className="text-center">
+
+                <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-black/40">
+                  Nothing here yet
+                </p>
+
+                <p className="text-[11px] text-black/30">
+                  New products are coming soon.
+                </p>
+
+              </div>
+
             </div>
+
           )}
+
         </div>
+
       </section>
 
 
       {/* =====================================================
-          COLLECTIONS
+          BOTTOM STATEMENT
       ===================================================== */}
-      <section className="mx-auto max-w-[1440px] px-6 py-24 md:px-10">
 
-        <div className="mb-12 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+      <section className="border-t border-black/10">
 
-          <div>
-            <p className="mb-4 text-[9px] uppercase tracking-[0.25em] text-black/40">
-              Explore
+        <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-10">
+
+          <div className="max-w-[850px]">
+
+            <p className="mb-7 text-[9px] uppercase tracking-[0.25em] text-black/35">
+              SNITCH
             </p>
 
-            <h2 className="text-[48px] font-black uppercase leading-[0.82] tracking-[-0.07em] sm:text-[64px]">
-              SNITCH
+            <h2 className="text-[36px] font-medium uppercase leading-[0.95] tracking-[-0.05em] sm:text-[52px] md:text-[64px]">
+              Dress different.
               <br />
-              Collections
+              Move different.
               <br />
-              <span className="text-black/20">26—27</span>
+              Be different.
             </h2>
-          </div>
 
-          <div className="flex gap-8 text-[9px] uppercase tracking-[0.16em]">
-            <button className="font-semibold underline underline-offset-4">
-              All
-            </button>
-            <button className="text-black/40">Men</button>
-            <button className="text-black/40">Women</button>
-            <button className="text-black/40">New</button>
-          </div>
-        </div>
-
-
-        {collectionProducts.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-
-            {collectionProducts.slice(0, 3).map((product, index) => (
-              <article
-                key={product._id}
-                onClick={() => openProduct(product)}
-                className={`group cursor-pointer ${
-                  index === 1 ? "md:mt-14" : ""
-                }`}
-              >
-
-                <div className="aspect-[0.82] overflow-hidden bg-[#e8e8e5]">
-                  <img
-                    src={getImage(product)}
-                    alt={product.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
-                  />
-                </div>
-
-                <div className="mt-4 flex items-start justify-between">
-                  <div>
-                    <p className="text-[8px] uppercase tracking-[0.15em] text-black/40">
-                      Collection / 01
-                    </p>
-
-                    <h3 className="mt-1 text-[11px] uppercase">
-                      {product.title}
-                    </h3>
-                  </div>
-
-                  <span className="text-[10px]">
-                    {formatPrice(product)}
-                  </span>
-                </div>
-
-              </article>
-            ))}
-
-          </div>
-        )}
-
-        <div className="mt-10 flex justify-center">
-          <button className="border-b border-black pb-1 text-[9px] uppercase tracking-[0.2em]">
-            Load more
-          </button>
-        </div>
-      </section>
-
-
-      {/* =====================================================
-          EDITORIAL STATEMENT
-      ===================================================== */}
-      <section className="border-y border-black/10 py-28">
-
-        <div className="mx-auto max-w-[900px] px-6 text-center">
-
-          <p className="mb-7 text-[9px] uppercase tracking-[0.25em] text-black/40">
-            The SNITCH approach
-          </p>
-
-          <h2 className="text-[28px] font-medium uppercase leading-[1.05] tracking-[-0.045em] sm:text-[42px] md:text-[52px]">
-            Designed to make
-            <br />
-            everyday dressing
-            <br />
-            feel different.
-          </h2>
-
-          <p className="mx-auto mt-8 max-w-[560px] text-[11px] leading-6 text-black/50">
-            We believe good clothing doesn't need to shout.
-            Thoughtful silhouettes, considered details and pieces
-            built to move with you — that's the SNITCH way.
-          </p>
-
-        </div>
-      </section>
-
-
-      {/* =====================================================
-          EDITORIAL IMAGE STRIP
-      ===================================================== */}
-      <section className="overflow-hidden py-28">
-
-        <div className="mx-auto flex max-w-[1440px] items-start gap-4 px-6 md:px-10">
-
-          <div className="w-[31%] shrink-0 pt-12">
-            <div className="aspect-[0.78] overflow-hidden bg-[#e8e8e5]">
-              <img
-                src={
-                  collectionProducts[0]
-                    ? getImage(collectionProducts[0])
-                    : FALLBACK_IMAGE
-                }
-                alt="SNITCH editorial"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="w-[26%] shrink-0">
-            <div className="aspect-[0.72] overflow-hidden bg-[#e8e8e5]">
-              <img
-                src={
-                  collectionProducts[1]
-                    ? getImage(collectionProducts[1])
-                    : FALLBACK_IMAGE
-                }
-                alt="SNITCH editorial"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="w-[31%] shrink-0 pt-24">
-            <div className="aspect-[0.78] overflow-hidden bg-[#e8e8e5]">
-              <img
-                src={
-                  collectionProducts[2]
-                    ? getImage(collectionProducts[2])
-                    : FALLBACK_IMAGE
-                }
-                alt="SNITCH editorial"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="w-[20%] shrink-0 pt-8">
-            <div className="aspect-[0.65] overflow-hidden bg-[#e8e8e5]">
-              <img
-                src={
-                  collectionProducts[3]
-                    ? getImage(collectionProducts[3])
-                    : FALLBACK_IMAGE
-                }
-                alt="SNITCH editorial"
-                className="h-full w-full object-cover"
-              />
-            </div>
           </div>
 
         </div>
+
       </section>
 
 
       {/* =====================================================
           FOOTER
       ===================================================== */}
-      <footer className="border-t border-black/10 bg-[#eeeeeb]">
 
-        <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-10">
+      <footer className="border-t border-black/10">
 
-          <div className="grid grid-cols-2 gap-12 md:grid-cols-4">
+        <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-6 px-6 py-8 text-[8px] uppercase tracking-[0.18em] text-black/40 sm:flex-row md:px-10">
 
-            <div>
-              <p className="mb-5 text-[9px] uppercase tracking-[0.2em] text-black/40">
-                SNITCH
-              </p>
+          <span>
+            © 2026 SNITCH
+          </span>
 
-              <p className="max-w-[180px] text-[11px] leading-5 text-black/55">
-                Shop. Discover. Dress different.
-              </p>
-            </div>
+          <div className="flex gap-6">
 
-            <div>
-              <p className="mb-5 text-[9px] uppercase tracking-[0.2em]">
-                Explore
-              </p>
+            <button className="hover:text-black">
+              Privacy
+            </button>
 
-              <div className="flex flex-col gap-2 text-[10px] text-black/50">
-                <button className="text-left hover:text-black">Men</button>
-                <button className="text-left hover:text-black">Women</button>
-                <button className="text-left hover:text-black">New arrivals</button>
-                <button className="text-left hover:text-black">Collections</button>
-              </div>
-            </div>
+            <button className="hover:text-black">
+              Terms
+            </button>
 
-            <div>
-              <p className="mb-5 text-[9px] uppercase tracking-[0.2em]">
-                Help
-              </p>
+            <button className="hover:text-black">
+              Contact
+            </button>
 
-              <div className="flex flex-col gap-2 text-[10px] text-black/50">
-                <button className="text-left hover:text-black">Contact</button>
-                <button className="text-left hover:text-black">Shipping</button>
-                <button className="text-left hover:text-black">Returns</button>
-                <button className="text-left hover:text-black">FAQ</button>
-              </div>
-            </div>
-
-            <div>
-              <p className="mb-5 text-[9px] uppercase tracking-[0.2em]">
-                Follow
-              </p>
-
-              <div className="flex flex-col gap-2 text-[10px] text-black/50">
-                <button className="text-left hover:text-black">Instagram</button>
-                <button className="text-left hover:text-black">X</button>
-                <button className="text-left hover:text-black">Pinterest</button>
-              </div>
-            </div>
-
-          </div>
-
-
-          <div className="mt-20 flex flex-col justify-between gap-5 border-t border-black/10 pt-6 text-[8px] uppercase tracking-[0.16em] text-black/40 sm:flex-row">
-            <span>© 2026 SNITCH</span>
-            <span>Privacy / Terms</span>
           </div>
 
         </div>
+
       </footer>
 
     </main>
