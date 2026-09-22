@@ -37,22 +37,29 @@ export const useAuth = () => {
   }
 
 
-  async function handleLogin({ email, password }) {
+async function handleLogin({ email, password }) {
+  try {
+    dispatch(setLoading(true));
 
-    try {
-      dispatch(setLoading(true));
-      const data = await login({ email, password });
-      dispatch(setUser(data.user));
-    } catch (error) {
-      console.error("Login error:", error);
-      dispatch(
-        setError(error.response?.data?.message || "Login failed")
-      );
-      throw error;
-    } finally {
-      dispatch(setLoading(false));
-    }
+    const data = await login({ email, password });
+
+    console.log("LOGIN API DATA:", data);
+    console.log("LOGIN USER:", data.user);
+    console.log("IS SELLER:", data.user?.isSeller);
+
+    dispatch(setUser(data.user));
+
+    return data.user;
+  } catch (error) {
+    console.error("Login error:", error);
+    dispatch(
+      setError(error.response?.data?.message || "Login failed")
+    );
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
   }
+}
 
 
   async function handleGetMe() {

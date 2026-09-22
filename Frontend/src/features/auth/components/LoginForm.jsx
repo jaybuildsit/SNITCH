@@ -99,36 +99,41 @@ export const LoginForm = () => {
     setIsSubmitting(true);
 
     try {
-      if (typeof handleLogin === 'function') {
-        await handleLogin({
+      if (typeof handleLogin === "function") {
+        const user = await handleLogin({
           email: formData.email,
           password: formData.password,
         });
+
         setSubmitFeedback({
-          type: 'success',
-          message: 'Welcome back! Redirecting to your dashboard...',
+          type: "success",
+          message: "Welcome back! Redirecting...",
         });
-        setTimeout(() => {
-          navigate('/');
-        }, 600);
+
+        if (user.role === "seller") {
+          navigate("/seller");
+        } else {
+          navigate("/");
+        }
       } else {
         // Mock success fallback for preview/demo
         await new Promise((res) => setTimeout(res, 800));
+
         setSubmitFeedback({
-          type: 'success',
-          message: 'Welcome back! Signed in successfully. (Demo mode)',
+          type: "success",
+          message: "Welcome back! Signed in successfully. (Demo mode)",
         });
-        setTimeout(() => {
-          navigate('/');
-        }, 800);
+
+        navigate("/");
       }
     } catch (err) {
-      console.error('Login error:', err);
+      console.error("Login error:", err);
+
       setSubmitFeedback({
-        type: 'error',
+        type: "error",
         message:
           err.response?.data?.message ||
-          'Invalid email or password. Please verify your credentials and try again.',
+          "Invalid email or password. Please verify your credentials and try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -182,11 +187,10 @@ export const LoginForm = () => {
       {/* Global submit feedback banner */}
       {submitFeedback && (
         <div
-          className={`mb-6 px-4 py-3 rounded-md text-[13px] border flex items-start gap-2.5 transition-all duration-150 ${
-            submitFeedback.type === 'success'
-              ? 'bg-neutral-50 text-neutral-900 border-neutral-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
-          }`}
+          className={`mb-6 px-4 py-3 rounded-md text-[13px] border flex items-start gap-2.5 transition-all duration-150 ${submitFeedback.type === 'success'
+            ? 'bg-neutral-50 text-neutral-900 border-neutral-200'
+            : 'bg-rose-50 text-rose-800 border-rose-200'
+            }`}
         >
           <div className="pt-0.5 shrink-0">
             {submitFeedback.type === 'success' ? (
@@ -245,9 +249,8 @@ export const LoginForm = () => {
             />
             <div className="w-3.5 h-3.5 rounded-[3px] border border-neutral-300 bg-white peer-checked:bg-neutral-950 peer-checked:border-neutral-950 flex items-center justify-center transition-all duration-150 group-hover:border-neutral-400">
               <svg
-                className={`w-2.5 h-2.5 text-white fill-none stroke-current stroke-[2.5] transition-opacity duration-150 ${
-                  formData.rememberMe ? 'opacity-100' : 'opacity-0'
-                }`}
+                className={`w-2.5 h-2.5 text-white fill-none stroke-current stroke-[2.5] transition-opacity duration-150 ${formData.rememberMe ? 'opacity-100' : 'opacity-0'
+                  }`}
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
