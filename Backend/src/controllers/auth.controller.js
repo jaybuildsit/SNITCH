@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
-import  userModel  from "../models/user.model.js";
+import userModel from "../models/user.model.js";
 
 
 
@@ -129,4 +129,20 @@ export const googleCallback = async (req, res) => {
     } else {
         await sendtokenResponse(user, res, "User logged in successfully");
     }
+}
+
+export const getMe = async (req, res) => {
+
+    const user = req.user
+
+    res.status(200).json({
+        message: "User Fetched Successfully!!!", success: true, user: {
+            id: user._id,
+            email: user.email,
+            contact: user.contact,
+            fullName: user.fullName,
+            role: user.role
+        }
+    })
+
 }

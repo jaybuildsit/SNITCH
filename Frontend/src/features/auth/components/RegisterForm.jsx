@@ -130,7 +130,7 @@ export const RegisterForm = () => {
           password: formData.password,
           isSeller: formData.isSeller,
         });
-        navigate("/login")
+        navigate("/")
         setSubmitFeedback({
           type: 'success',
           message: 'Account created successfully! Welcome to SNITCH.',
@@ -277,6 +277,7 @@ export const RegisterForm = () => {
 
         {/* PRIMARY CTA BUTTON */}
         <button
+          // onClick={() => <Navigate to="/" />}
           type="submit"
           disabled={isSubmitting}
           className="
@@ -340,6 +341,7 @@ export const RegisterForm = () => {
                 →
               </span>
             </>
+
           )}
         </button>
         {/* SOCIAL LOGIN */}

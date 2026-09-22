@@ -1,6 +1,7 @@
 import { setUser, setLoading, setError } from "../state/auth.slice";
-import { register ,login} from "../services/auth.api";
+import { register, login, getMe } from "../services/auth.api";
 import { useDispatch } from "react-redux";
+
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -36,22 +37,41 @@ export const useAuth = () => {
   }
 
 
-  async function handleLogin({email,password}){
+  async function handleLogin({ email, password }) {
 
     try {
-        dispatch(setLoading(true));
-        const data = await login({email,password});
-        dispatch(setUser(data.user));
+      dispatch(setLoading(true));
+      const data = await login({ email, password });
+      dispatch(setUser(data.user));
     } catch (error) {
-        console.error("Login error:", error);
-        dispatch(
-            setError(error.response?.data?.message || "Login failed")
-        );
-        throw error;
+      console.error("Login error:", error);
+      dispatch(
+        setError(error.response?.data?.message || "Login failed")
+      );
+      throw error;
     } finally {
-        dispatch(setLoading(false));
+      dispatch(setLoading(false));
     }
   }
 
-  return { handleRegister,handleLogin };
+
+  async function handleGetMe() {
+    try{
+      dispatch(setLoading(true));
+      const data=await getMe();
+      dispatch(setUser(data.user));
+    }
+    catch(error){
+      console.error("Get me error:", error);
+      dispatch(
+        setError(error.response?.data?.message || "Get-me failed")
+      );
+      // throw error;
+    }
+    finally{
+      dispatch(setLoading(false));
+    }
+  }
+
+  return { handleRegister, handleLogin, handleGetMe };
 };
