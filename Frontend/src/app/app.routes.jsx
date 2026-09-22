@@ -6,11 +6,12 @@ import CreateProduct from "../features/products/pages/CreateProduct";
 import Dashboard from "../features/products/pages/Dashboard";
 import SellerHome from "../features/products/pages/SellerHome";
 import Protected from "../features/auth/components/Protected";
+import Home from "../features/products/pages/Home";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: <h1>HelloWorld</h1>,
+    element: <Home /> ,
   },
 
   {

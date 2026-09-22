@@ -1,7 +1,7 @@
 import express from "express";
 
 import { authenticateSeller } from "../middleware/auth.middleware.js"
-import { createProduct, getSellerProducts, deleteProduct } from "../controllers/product.controller.js";
+import { createProduct, getSellerProducts, deleteProduct, getAllProducts } from "../controllers/product.controller.js";
 import multer from "multer";
 import { createProductValidator } from "../validator/product.validator.js";
 
@@ -27,7 +27,9 @@ router.delete(
     "/:productId",
     authenticateSeller,
     deleteProduct
-);
+)
+
+router.get('/',getAllProducts)
 
 export default router;
 

@@ -43,9 +43,9 @@ async function handleLogin({ email, password }) {
 
     const data = await login({ email, password });
 
-    console.log("LOGIN API DATA:", data);
-    console.log("LOGIN USER:", data.user);
-    console.log("IS SELLER:", data.user?.isSeller);
+    // console.log("LOGIN API DATA:", data);
+    // console.log("LOGIN USER:", data.user);
+    // console.log("IS SELLER:", data.user?.isSeller);
 
     dispatch(setUser(data.user));
 

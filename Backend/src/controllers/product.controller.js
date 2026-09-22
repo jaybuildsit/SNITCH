@@ -77,3 +77,15 @@ export async function deleteProduct(req, res) {
         success: true,
     });
 }
+
+
+export async function getAllProducts(req, res) {
+    const products = await productModel.find()
+
+    return res.status(200).json({ message: "Products Fetched Successfully!!", success: true, products })
+
+    
+
+
+
+}       
