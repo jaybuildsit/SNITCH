@@ -162,16 +162,16 @@ export const LoginForm = () => {
       {/* Editorial Header */}
       <div className="mb-7">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-neutral-950">
+          <span className="text-[11px] font-bold tracking-[0.4em] uppercase text-neutral-950">
             SNITCH
           </span>
           <span className="text-neutral-300 text-xs select-none">·</span>
-          <span className="text-[10px] font-medium tracking-[0.14em] uppercase text-neutral-400">
+          {/* <span className="text-[10px] font-medium tracking-[0.14em] uppercase text-neutral-400">
             Account
-          </span>
+          </span> */}
         </div>
 
-        <h1 className="text-[26px] sm:text-[30px] font-semibold tracking-[-0.02em] text-neutral-950 leading-tight">
+        <h1 className="text-[26px] sm:text-[38px] font-semibold tracking-[-0.02em] text-neutral-950 leading-tight">
           Welcome back.
         </h1>
         <p className="text-[13px] text-neutral-400 mt-1.5 font-normal leading-relaxed">

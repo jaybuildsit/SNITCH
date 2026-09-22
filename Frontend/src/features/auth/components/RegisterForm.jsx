@@ -157,13 +157,13 @@ export const RegisterForm = () => {
   };
 
   return (
-    <div className="w-full max-w-[560px] mx-auto py-8 sm:py-12 px-6 sm:px-10 flex flex-col justify-center min-h-full bg-[#F9F9F7]">
+    <div className="w-full max-w-[560px] mx-auto py-8 sm:py-12 px-6 sm:px-10 flex flex-col justify-center min-h-full bg-[#FFFFF]">
       {/* Registration Header */}
       <div className="mb-7">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-neutral-200 bg-white shadow-sm mb-4">
+        {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-neutral-200 bg-white shadow-sm mb-4">
           <span>CREATE ACCOUNT</span>
-        </div>
-        <h2 className="text-3xl sm:text-[38px] font-extrabold text-black tracking-tight leading-tight">
+        </div> */}
+        <h2 className="text-xl sm:text-[30px] font-semibold text-black tracking-tight leading-tight">
           Join SNITCH
         </h2>
         <p className="text-slate-500 text-sm sm:text-base mt-1.5 leading-relaxed">
