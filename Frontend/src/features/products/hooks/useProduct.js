@@ -1,45 +1,39 @@
-import { createProduct, getSellerProduct } from "../services/product.api";
+import {
+    createProduct,
+    getSellerProduct,
+    deleteProduct,
+} from "../services/product.api";
+
 import { useDispatch } from "react-redux";
 import { setSellerProducts } from "../state/product.slice";
 
-
-// export function useProduct(){
-//     const dispatch = useDispatch()
-
-//     async function handleCreateProduct(formdata){
-//         dispatch(createProduct(formdata))
-//     }
-
-//     async function handleGetSellerProduct(){
-//         dispatch(getSellerProduct())
-//     }
-
-//     return {
-//         handleCreateProduct,
-//         handleGetSellerProduct
-//     }
-// }
-
-
 export const useProduct = () => {
-
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     async function handleCreateProduct(formdata) {
-
-        const data = await createProduct(formdata)
-        return data.product
-
+        const data = await createProduct(formdata);
+        return data.product;
     }
 
     async function handleGetSellerProduct() {
-        const data = await getSellerProduct()
-        dispatch(setSellerProducts(data.products))
-        return data.products 
+        const data = await getSellerProduct();
+
+        dispatch(setSellerProducts(data.products));
+
+        return data.products;
+    }
+
+    async function handleDeleteProduct(productId) {
+        const data = await deleteProduct(productId);
+
+        await handleGetSellerProduct();
+
+        return data;
     }
 
     return {
         handleCreateProduct,
-        handleGetSellerProduct
-    }
-}
+        handleGetSellerProduct,
+        handleDeleteProduct,
+    };
+};

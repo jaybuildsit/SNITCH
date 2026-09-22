@@ -50,6 +50,30 @@ export async function getSellerProducts(req, res) {
 
     })
 
-    
 
+
+}
+
+export async function deleteProduct(req, res) {
+    const seller = req.user;
+    const { productId } = req.params;
+
+    const product = await productModel.findOne({
+        _id: productId,
+        seller: seller._id,
+    });
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found",
+            success: false,
+        });
+    }
+
+    await productModel.findByIdAndDelete(productId);
+
+    res.status(200).json({
+        message: "Product deleted successfully",
+        success: true,
+    });
 }

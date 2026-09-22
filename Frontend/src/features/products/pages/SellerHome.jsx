@@ -44,45 +44,192 @@ const SellerHome = () => {
         </div>
 
         {/* Actions */}
-        <div className="mt-16 max-w-3xl border-t border-black/[0.08]">
+        {/* Actions */}
+        <div className="mt-16 grid max-w-4xl gap-4 sm:grid-cols-2">
+          {/* Create Product */}
           <button
             type="button"
             onClick={() => navigate("/seller/create")}
-            className="group flex w-full items-center justify-between border-b border-black/[0.08] py-8 text-left transition-opacity duration-200 hover:opacity-60"
+            className="
+      group
+      relative
+      flex
+      min-h-[250px]
+      flex-col
+      justify-between
+      overflow-hidden
+      rounded-[4px]
+      border
+      border-black/[0.10]
+      bg-white
+      p-7
+      text-left
+      transition-all
+      duration-500
+      hover:border-[#111111]
+      hover:bg-[#111111]
+    "
           >
+            <div className="flex items-start justify-between">
+              <span
+                className="
+          text-[10px]
+          font-medium
+          tracking-[0.2em]
+          text-black/35
+          transition-colors
+          duration-500
+          group-hover:text-white/40
+        "
+              >
+                01
+              </span>
+
+              <span
+                className="
+          flex
+          h-9
+          w-9
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-black/10
+          text-[16px]
+          text-black/60
+          transition-all
+          duration-500
+          group-hover:border-white/20
+          group-hover:text-white
+        "
+              >
+                ↗
+              </span>
+            </div>
+
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em]">
+              <p
+                className="
+          text-[24px]
+          font-medium
+          tracking-[-0.03em]
+          text-[#111111]
+          transition-colors
+          duration-500
+          group-hover:text-white
+        "
+              >
                 Create product
               </p>
 
-              <p className="mt-2 text-[13px] text-black/40">
-                Add a new product to your store.
+              <p
+                className="
+          mt-3
+          max-w-[240px]
+          text-[12px]
+          leading-5
+          text-black/40
+          transition-colors
+          duration-500
+          group-hover:text-white/45
+        "
+              >
+                Add something new to your store and make it available to customers.
               </p>
             </div>
-
-            <span className="text-[22px] transition-transform duration-200 group-hover:translate-x-1">
-              →
-            </span>
           </button>
 
+          {/* View Products */}
           <button
             type="button"
             onClick={() => navigate("/seller/dashboard")}
-            className="group flex w-full items-center justify-between py-8 text-left transition-opacity duration-200 hover:opacity-60"
+            className="
+      group
+      relative
+      flex
+      min-h-[250px]
+      flex-col
+      justify-between
+      overflow-hidden
+      rounded-[4px]
+      border
+      border-black/[0.10]
+      bg-white
+      p-7
+      text-left
+      transition-all
+      duration-500
+      hover:border-[#111111]
+      hover:bg-[#111111]
+    "
           >
+            <div className="flex items-start justify-between">
+              <span
+                className="
+          text-[10px]
+          font-medium
+          tracking-[0.2em]
+          text-black/35
+          transition-colors
+          duration-500
+          group-hover:text-white/40
+        "
+              >
+                02
+              </span>
+
+              <span
+                className="
+          flex
+          h-9
+          w-9
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-black/10
+          text-[16px]
+          text-black/60
+          transition-all
+          duration-500
+          group-hover:border-white/20
+          group-hover:text-white
+        "
+              >
+                ↗
+              </span>
+            </div>
+
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em]">
+              <p
+                className="
+          text-[24px]
+          font-medium
+          tracking-[-0.03em]
+          text-[#111111]
+          transition-colors
+          duration-500
+          group-hover:text-white
+        "
+              >
                 Your products
               </p>
 
-              <p className="mt-2 text-[13px] text-black/40">
-                View and manage your products.
+              <p
+                className="
+          mt-3
+          max-w-[240px]
+          text-[12px]
+          leading-5
+          text-black/40
+          transition-colors
+          duration-500
+          group-hover:text-white/45
+        "
+              >
+                View, manage, and edit everything you've created for your store.
               </p>
             </div>
-
-            <span className="text-[22px] transition-transform duration-200 group-hover:translate-x-1">
-              →
-            </span>
           </button>
         </div>
 
