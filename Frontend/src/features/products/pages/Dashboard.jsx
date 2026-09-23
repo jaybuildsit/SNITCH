@@ -203,6 +203,7 @@ const Dashboard = () => {
                                             </span>
 
                                             <button
+                                                onClick={() => { navigate(`/seller/edit/${product._id}`) }}
                                                 type="button"
                                                 className="text-[10px] text-neutral-400 transition-colors hover:text-neutral-800"
                                             >
@@ -245,7 +246,7 @@ const Dashboard = () => {
                                                     className="block w-full px-3 py-2 text-left text-[11px] text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-950"
                                                     onClick={() => {
                                                         setOpenMenu(null);
-                                                        // Edit functionality later
+                                                        navigate(`/seller/edit/${product._id}`)
                                                     }}
                                                 >
                                                     Edit

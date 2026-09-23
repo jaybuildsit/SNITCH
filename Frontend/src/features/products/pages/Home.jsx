@@ -461,33 +461,104 @@ const Home = () => {
           FOOTER
       ===================================================== */}
 
-      <footer className="border-t border-black/10">
+      <footer className="bg-[#111] text-white">
 
-        <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-6 px-6 py-8 text-[8px] uppercase tracking-[0.18em] text-black/40 sm:flex-row md:px-10">
+                <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14">
 
-          <span>
-            © 2026 SNITCH
-          </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
-          <div className="flex gap-6">
+                        {/* BRAND */}
 
-            <button className="hover:text-black">
-              Privacy
-            </button>
+                        <div>
 
-            <button className="hover:text-black">
-              Terms
-            </button>
+                            <h2 className="text-3xl font-bold tracking-[0.3em]">
+                                SNITCH
+                            </h2>
 
-            <button className="hover:text-black">
-              Contact
-            </button>
+                            <p className="mt-5 text-sm text-gray-400 leading-6 max-w-xs">
+                                Redefining everyday style.
+                                Premium fashion for those who
+                                move different.
+                            </p>
 
-          </div>
+                        </div>
 
-        </div>
+                        {/* SHOP */}
 
-      </footer>
+                        <div>
+
+                            <h3 className="font-medium mb-5">
+                                Shop
+                            </h3>
+
+                            <div className="space-y-3 text-sm text-gray-400">
+
+                                <p>Men</p>
+                                <p>Women</p>
+                                <p>New Arrivals</p>
+                                <p>Collections</p>
+                                <p>Sale</p>
+
+                            </div>
+
+                        </div>
+
+                        {/* HELP */}
+
+                        <div>
+
+                            <h3 className="font-medium mb-5">
+                                Help
+                            </h3>
+
+                            <div className="space-y-3 text-sm text-gray-400">
+
+                                <p>FAQ</p>
+                                <p>Shipping</p>
+                                <p>Returns & Exchange</p>
+                                <p>Size Guide</p>
+                                <p>Track Order</p>
+
+                            </div>
+
+                        </div>
+
+                        {/* COMPANY */}
+
+                        <div>
+
+                            <h3 className="font-medium mb-5">
+                                Company
+                            </h3>
+
+                            <div className="space-y-3 text-sm text-gray-400">
+
+                                <p>About Us</p>
+                                <p>Contact Us</p>
+                                <p>Terms of Service</p>
+                                <p>Privacy Policy</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div className="border-t border-gray-800 mt-12 pt-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-gray-500">
+
+                        <p>
+                            © 2026 SNITCH. All Rights Reserved.
+                        </p>
+
+                        <p>
+                            India (INR ₹) · English
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </footer>
 
     </main>
   );

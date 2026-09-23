@@ -8,11 +8,12 @@ import SellerHome from "../features/products/pages/SellerHome";
 import Protected from "../features/auth/components/Protected";
 import Home from "../features/products/pages/Home";
 import ProductDetails from "../features/products/pages/ProductDetails";
+import SellerProuductEdit from "../features/products/pages/SellerProuductEdit";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: <Home /> ,
+    element: <Home />,
   },
 
   {
@@ -26,7 +27,7 @@ export const routes = createBrowserRouter([
   },
 
   {
-    path:"/products/:id",
+    path: "/products/:id",
     element: <ProductDetails />,
   },
 
@@ -47,6 +48,14 @@ export const routes = createBrowserRouter([
         element: (
           <Protected>
             <CreateProduct />
+          </Protected>
+        ),
+      },
+      {
+        path: "edit/:id",
+        element: (
+          <Protected>
+            <SellerProuductEdit />
           </Protected>
         ),
       },

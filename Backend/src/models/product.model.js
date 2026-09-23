@@ -37,11 +37,52 @@ const productScheme = new mongoose.Schema({
             type: String,
             required: true
         },
-    }]
+    }],
+    variants: [
+        {
+            sku: {
+                type: String,
+                unique: true,
+                sparse: true
+            },
 
-},{timestamps: true});
+            images: [
+                {
+                    url: {
+                        type: String,
+                        required: true
+                    }
+                }
+            ],
+
+            attributes: {
+                type: Map,
+                of: String
+            },
+
+            sizes: {
+                type: Map,
+                of: Number
+            },
+
+            price: {
+                amount: {
+                    type: Number,
+                    required: true
+                },
+
+                currency: {
+                    type: String,
+                    enum: ["USD", "EUR", "GBP", "INR", "JPY"],
+                    default: "INR"
+                }
+            }
+        }
+    ]
+
+}, { timestamps: true });
 
 
-const productModel=mongoose.model("Product",productScheme);
+const productModel = mongoose.model("Product", productScheme);
 
 export default productModel;
