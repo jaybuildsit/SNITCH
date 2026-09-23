@@ -103,3 +103,40 @@ export async function getProductById(req, res) {
         product,
     });
 }
+
+export async function updateProduct(req, res) {
+    const seller = req.user;
+    const { productId } = req.params;
+
+    const {
+        title,
+        description,
+        price,
+        variants,
+    } = req.body;
+
+    const product = await productModel.findOne({
+        _id: productId,
+        seller: seller._id,
+    });
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found",
+            success: false,
+        });
+    }
+
+    product.title = title;
+    product.description = description;
+    product.price = price;
+    product.variants = variants;
+
+    await product.save();
+
+    return res.status(200).json({
+        message: "Product updated successfully",
+        success: true,
+        product,
+    });
+}

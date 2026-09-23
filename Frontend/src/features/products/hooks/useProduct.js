@@ -3,7 +3,9 @@ import {
     getSellerProduct,
     deleteProduct,
     getAllProducts,
-    getProductById
+    getProductById,
+    updateProduct
+    
 } from "../services/product.api";
 
 import { useDispatch } from "react-redux";
@@ -41,10 +43,43 @@ export const useProduct = () => {
     }
 
     async function handleGetProductById(productId) {
-    const data = await getProductById(productId);
+        const data = await getProductById(productId);
 
-    return data.product;
-}
+        return data.product;
+    }
+
+    async function handleUpdateProduct(productId, productData) {
+        const data = await updateProduct(productId, productData);
+
+        return data;
+    }
+    async function handleUpdateProduct(productId, productData) {
+        const data = await updateProduct(productId, productData);
+
+        return data;
+    }
+
+
+    // const handleSaveChanges = async () => {
+    //     try {
+    //         setSaving(true);
+
+    //         await handleUpdateProduct(id, product);
+
+    //         setSaved(true);
+
+    //         setTimeout(() => {
+    //             navigate("/seller/dashboard");
+    //         }, 800);
+
+    //     } catch (error) {
+    //         console.log("Failed to save changes!", error);
+    //     } finally {
+    //         setSaving(false);
+    //     }
+    // };
+
+
 
     return {
         handleCreateProduct,
@@ -52,5 +87,7 @@ export const useProduct = () => {
         handleDeleteProduct,
         handleGetAllProducts,
         handleGetProductById,
+        handleUpdateProduct,
+
     };
 };

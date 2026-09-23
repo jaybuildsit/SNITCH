@@ -23,7 +23,7 @@ export async function deleteProduct(productId) {
     return response.data;
 }
 
-export async function getAllProducts(){
+export async function getAllProducts() {
     const response = await productApiInstance.get("/");
 
     return response.data;
@@ -31,6 +31,15 @@ export async function getAllProducts(){
 
 export async function getProductById(productId) {
     const response = await productApiInstance.get(`/${productId}`);
+
+    return response.data;
+}
+
+export async function updateProduct(productId, productData) {
+    const response = await productApiInstance.put(
+        `/${productId}`,
+        productData
+    );
 
     return response.data;
 }
