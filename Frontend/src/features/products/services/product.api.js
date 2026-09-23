@@ -44,5 +44,17 @@ export async function updateProduct(productId, productData) {
     return response.data;
 }
 
+export async function uploadProductImage(file) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await productApiInstance.post("/upload-image", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+
+    return response.data;
+}
 
 export default productApiInstance;

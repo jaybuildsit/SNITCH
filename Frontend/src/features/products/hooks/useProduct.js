@@ -4,8 +4,8 @@ import {
     deleteProduct,
     getAllProducts,
     getProductById,
-    updateProduct
-    
+    updateProduct,
+    uploadProductImage,
 } from "../services/product.api";
 
 import { useDispatch } from "react-redux";
@@ -37,9 +37,9 @@ export const useProduct = () => {
 
     async function handleGetAllProducts() {
         const data = await getAllProducts();
-        dispatch(setProducts(data.products))
+        dispatch(setProducts(data.products));
 
-        return data.products
+        return data.products;
     }
 
     async function handleGetProductById(productId) {
@@ -53,33 +53,12 @@ export const useProduct = () => {
 
         return data;
     }
-    async function handleUpdateProduct(productId, productData) {
-        const data = await updateProduct(productId, productData);
+
+    async function handleUploadProductImage(file) {
+        const data = await uploadProductImage(file);
 
         return data;
     }
-
-
-    // const handleSaveChanges = async () => {
-    //     try {
-    //         setSaving(true);
-
-    //         await handleUpdateProduct(id, product);
-
-    //         setSaved(true);
-
-    //         setTimeout(() => {
-    //             navigate("/seller/dashboard");
-    //         }, 800);
-
-    //     } catch (error) {
-    //         console.log("Failed to save changes!", error);
-    //     } finally {
-    //         setSaving(false);
-    //     }
-    // };
-
-
 
     return {
         handleCreateProduct,
@@ -88,6 +67,6 @@ export const useProduct = () => {
         handleGetAllProducts,
         handleGetProductById,
         handleUpdateProduct,
-
+        handleUploadProductImage,
     };
 };

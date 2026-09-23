@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-
 const productScheme = new mongoose.Schema({
-
     title: {
         type: String,
         required: true,
@@ -11,7 +9,6 @@ const productScheme = new mongoose.Schema({
         type: String,
         required: true
     },
-
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -25,13 +22,10 @@ const productScheme = new mongoose.Schema({
         currency: {
             type: String,
             required: true,
-            enum: ["INR", "USD", "EUR", "GBP", "INR", "JPY", "CNY"], default: "INR" // Add more currencies as needed
+            enum: ["INR", "USD", "EUR", "GBP", "JPY", "CNY"],
+            default: "INR"
         },
-
-
-
     },
-
     images: [{
         url: {
             type: String,
@@ -42,10 +36,8 @@ const productScheme = new mongoose.Schema({
         {
             sku: {
                 type: String,
-                unique: true,
                 sparse: true
             },
-
             images: [
                 {
                     url: {
@@ -54,23 +46,23 @@ const productScheme = new mongoose.Schema({
                     }
                 }
             ],
-
             attributes: {
                 type: Map,
                 of: String
             },
-
+            stock: {
+                type: Number,
+                default: 0
+            },
             sizes: {
                 type: Map,
                 of: Number
             },
-
             price: {
                 amount: {
                     type: Number,
-                    required: true
+                    required: false
                 },
-
                 currency: {
                     type: String,
                     enum: ["USD", "EUR", "GBP", "INR", "JPY"],
@@ -79,9 +71,7 @@ const productScheme = new mongoose.Schema({
             }
         }
     ]
-
 }, { timestamps: true });
-
 
 const productModel = mongoose.model("Product", productScheme);
 
