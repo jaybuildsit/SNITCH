@@ -18,7 +18,11 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(true);
 
-    const sizes = ["S", "M", "L", "XL"];
+    // VARIANT STATES
+    const [selectedColor, setSelectedColor] = useState(null);
+    const [activeAccordion, setActiveAccordion] = useState(null);
+
+    const defaultSizes = ["S", "M", "L", "XL"];
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -64,38 +68,12 @@ const ProductDetails = () => {
         );
     };
 
-    const increaseQuantity = () => {
-        setQuantity((prev) => prev + 1);
+    const increaseQuantity = (maxStock = Infinity) => {
+        setQuantity((prev) => (prev < maxStock ? prev + 1 : prev));
     };
 
     const decreaseQuantity = () => {
         setQuantity((prev) => Math.max(1, prev - 1));
-    };
-
-    const handleAddToCart = () => {
-        if (!selectedSize) {
-            alert("Please select a size");
-            return;
-        }
-
-        console.log("ADD TO CART", {
-            productId: product._id,
-            size: selectedSize,
-            quantity,
-        });
-    };
-
-    const handleBuyNow = () => {
-        if (!selectedSize) {
-            alert("Please select a size");
-            return;
-        }
-
-        console.log("BUY NOW", {
-            productId: product._id,
-            size: selectedSize,
-            quantity,
-        });
     };
 
     if (loading) {
@@ -119,12 +97,143 @@ const ProductDetails = () => {
     }
 
     const images = product.images || [];
-
     const price = product.price?.amount || 0;
-
     const currency = product.price?.currency || "INR";
-
     const formattedPrice = new Intl.NumberFormat("en-IN").format(price);
+
+    // =========================================
+    // VARIANT HELPER LOGIC
+    // =========================================
+    const variants = product.variants || [];
+
+    // Extract unique colors and pick their first available thumbnail image
+    const variantColors = Array.from(
+        new Set(
+            variants
+                .map((v) =>
+                    v.attributes instanceof Map
+                        ? v.attributes.get("color") || v.attributes.get("Color")
+                        : v.attributes?.color || v.attributes?.Color
+                )
+                .filter(Boolean)
+        )
+    ).map((color) => {
+        const matchingVariant = variants.find((v) => {
+            const vColor =
+                v.attributes instanceof Map
+                    ? v.attributes.get("color") || v.attributes.get("Color")
+                    : v.attributes?.color || v.attributes?.Color;
+            return vColor === color;
+        });
+
+        const image = matchingVariant?.images?.[0];
+        return {
+            color,
+            imageUrl: getImageUrl(image),
+        };
+    });
+
+    // Helper to extract size keys from a variant's sizes map/object
+    const getVariantSizesList = (variant) => {
+        if (!variant || !variant.sizes) return [];
+        if (variant.sizes instanceof Map) {
+            return Array.from(variant.sizes.keys());
+        }
+        return Object.keys(variant.sizes);
+    };
+
+    // Calculate available sizes depending on whether a color variant is selected
+    let displaySizes = defaultSizes;
+    if (selectedColor && variants.length > 0) {
+        const colorVariants = variants.filter((v) => {
+            const vColor =
+                v.attributes instanceof Map
+                    ? v.attributes.get("color") || v.attributes.get("Color")
+                    : v.attributes?.color || v.attributes?.Color;
+            return vColor === selectedColor;
+        });
+
+        const sizesSet = new Set();
+        colorVariants.forEach((v) => {
+            getVariantSizesList(v).forEach((sz) => sizesSet.add(sz));
+        });
+
+        if (sizesSet.size > 0) {
+            displaySizes = Array.from(sizesSet);
+        }
+    }
+
+    // Resolve concrete variant when both Color and Size are chosen
+    let concreteVariant = null;
+    if (selectedColor && selectedSize && variants.length > 0) {
+        concreteVariant = variants.find((v) => {
+            const vColor =
+                v.attributes instanceof Map
+                    ? v.attributes.get("color") || v.attributes.get("Color")
+                    : v.attributes?.color || v.attributes?.Color;
+
+            const sizesList = getVariantSizesList(v);
+
+            return vColor === selectedColor && sizesList.includes(selectedSize);
+        });
+    }
+
+    // Extract stock for concrete variant
+    let concreteStock = null;
+    if (concreteVariant) {
+        if (concreteVariant.sizes) {
+            if (concreteVariant.sizes instanceof Map) {
+                concreteStock = concreteVariant.sizes.get(selectedSize);
+            } else {
+                concreteStock = concreteVariant.sizes[selectedSize];
+            }
+        }
+        if (concreteStock === undefined || concreteStock === null) {
+            concreteStock = concreteVariant.stock ?? Infinity;
+        }
+    }
+
+    const concreteVariantImage = getImageUrl(concreteVariant?.images?.[0]);
+
+    // Handle variant color click
+    const handleColorSelect = (color) => {
+        setSelectedColor(color);
+        setSelectedSize(null);
+        setQuantity(1);
+    };
+
+    // Action handlers using concrete variant or base product
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            alert("Please select a size");
+            return;
+        }
+
+        console.log("ADD TO CART", {
+            productId: product._id,
+            variantId: concreteVariant?._id || null,
+            color: selectedColor,
+            size: selectedSize,
+            quantity,
+            stock: concreteStock,
+        });
+    };
+
+    const handleBuyNow = () => {
+        if (!selectedSize) {
+            alert("Please select a size");
+            return;
+        }
+
+        console.log("BUY NOW", {
+            productId: product._id,
+            variantId: concreteVariant?._id || null,
+            color: selectedColor,
+            size: selectedSize,
+            quantity,
+            stock: concreteStock,
+        });
+    };
 
     return (
         <div className="min-h-screen bg-white text-black">
@@ -138,7 +247,7 @@ const ProductDetails = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16">
 
                     {/* =================================
-                        LEFT - IMAGE GALLERY
+                        LEFT - IMAGE GALLERY (UNCHANGED)
                     ================================= */}
 
                     <div className="flex gap-4">
@@ -264,6 +373,63 @@ const ProductDetails = () => {
 
                         </div>
 
+                        {/* =========================================
+                            VARIANT SELECTOR
+                        ========================================= */}
+
+                        {variantColors.length > 0 && (
+                            <div className="mt-8">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h2 className="text-sm font-semibold">
+                                        Select Variant
+                                    </h2>
+                                    {selectedColor && (
+                                        <span className="text-xs font-medium text-gray-600">
+                                            Color: <strong className="text-black">{selectedColor}</strong>
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-wrap gap-3">
+                                    {variantColors.map(({ color, imageUrl }) => {
+                                        const isSelected = selectedColor === color;
+
+                                        return (
+                                            <button
+                                                key={color}
+                                                onClick={() => handleColorSelect(color)}
+                                                className={`
+                                                    flex flex-col items-center gap-1.5 p-1.5 rounded-xl border transition-all duration-200
+                                                    ${
+                                                        isSelected
+                                                            ? "border-black bg-gray-50 ring-1 ring-black"
+                                                            : "border-gray-200 hover:border-gray-400 bg-white"
+                                                    }
+                                                `}
+                                            >
+                                                <div className="w-12 h-14 rounded-lg overflow-hidden bg-[#f5f5f5] flex items-center justify-center border border-gray-100">
+                                                    {imageUrl ? (
+                                                        <img
+                                                            src={imageUrl}
+                                                            alt={color}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-[10px] font-semibold uppercase text-gray-500">
+                                                            {color.slice(0, 3)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span className="text-xs font-medium px-1">
+                                                    {color}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                         {/* SIZE */}
 
                         <div className="mt-8">
@@ -282,7 +448,7 @@ const ProductDetails = () => {
 
                             <div className="flex gap-3">
 
-                                {sizes.map((size) => (
+                                {displaySizes.map((size) => (
 
                                     <button
                                         key={size}
@@ -315,6 +481,37 @@ const ProductDetails = () => {
 
                         </div>
 
+                        {/* CONCRETE VARIANT PREVIEW & STOCK INFORMATION */}
+
+                        {concreteVariant && (
+                            <div className="mt-6 p-4 rounded-xl border border-gray-200 bg-gray-50/50 flex items-center gap-4">
+                                {concreteVariantImage ? (
+                                    <img
+                                        src={concreteVariantImage}
+                                        alt={`${selectedColor} ${selectedSize}`}
+                                        className="w-16 h-20 object-cover rounded-lg border border-gray-200"
+                                    />
+                                ) : (
+                                    <div className="w-16 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-xs text-gray-500">
+                                        No Image
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="text-xs uppercase tracking-wider text-gray-500">
+                                        Selected Variant
+                                    </p>
+                                    <p className="text-sm font-semibold text-black mt-0.5">
+                                        {selectedColor} / {selectedSize}
+                                    </p>
+                                    {concreteStock !== null && (
+                                        <p className={`text-xs mt-1 font-medium ${concreteStock > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                                            {concreteStock > 0 ? `In Stock (${concreteStock} available)` : "Out of Stock"}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* QUANTITY */}
 
                         <div className="mt-8">
@@ -337,7 +534,7 @@ const ProductDetails = () => {
                                 </span>
 
                                 <button
-                                    onClick={increaseQuantity}
+                                    onClick={() => increaseQuantity(concreteStock ?? Infinity)}
                                     className="w-12 h-12 text-lg hover:bg-black hover:text-white transition"
                                 >
                                     +
@@ -353,7 +550,8 @@ const ProductDetails = () => {
 
                             <button
                                 onClick={handleAddToCart}
-                                className="
+                                disabled={concreteStock === 0}
+                                className={`
                                     h-14
                                     rounded-full
                                     border
@@ -364,14 +562,16 @@ const ProductDetails = () => {
                                     hover:bg-black
                                     hover:text-white
                                     transition-all
-                                "
+                                    ${concreteStock === 0 ? "opacity-50 cursor-not-allowed hover:bg-white hover:text-black" : ""}
+                                `}
                             >
                                 Add To Cart
                             </button>
 
                             <button
                                 onClick={handleBuyNow}
-                                className="
+                                disabled={concreteStock === 0}
+                                className={`
                                     h-14
                                     rounded-full
                                     bg-black
@@ -379,7 +579,8 @@ const ProductDetails = () => {
                                     font-medium
                                     hover:bg-[#222]
                                     transition-all
-                                "
+                                    ${concreteStock === 0 ? "opacity-50 cursor-not-allowed hover:bg-black" : ""}
+                                `}
                             >
                                 Checkout Now
                             </button>
@@ -430,35 +631,47 @@ const ProductDetails = () => {
                                 "Product Details",
                                 "Shipping & Returns",
                                 "Care Instructions",
-                            ].map((item) => (
+                            ].map((item, idx) => (
 
-                                <button
-                                    key={item}
-                                    className="
-                                        w-full
-                                        flex
-                                        justify-between
-                                        items-center
-                                        py-5
-                                        border-b
-                                        border-gray-200
-                                        text-sm
-                                        font-medium
-                                        text-left
-                                        hover:text-gray-500
-                                        transition
-                                    "
-                                >
+                                <div key={item} className="border-b border-gray-200">
+                                    <button
+                                        onClick={() =>
+                                            setActiveAccordion(
+                                                activeAccordion === idx ? null : idx
+                                            )
+                                        }
+                                        className="
+                                            w-full
+                                            flex
+                                            justify-between
+                                            items-center
+                                            py-5
+                                            text-sm
+                                            font-medium
+                                            text-left
+                                            hover:text-gray-500
+                                            transition
+                                        "
+                                    >
 
-                                    <span>
-                                        {item}
-                                    </span>
+                                        <span>
+                                            {item}
+                                        </span>
 
-                                    <span className="text-xl font-light">
-                                        +
-                                    </span>
+                                        <span className="text-xl font-light">
+                                            {activeAccordion === idx ? "−" : "+"}
+                                        </span>
 
-                                </button>
+                                    </button>
+
+                                    {activeAccordion === idx && (
+                                        <div className="pb-5 text-sm text-gray-600 leading-relaxed">
+                                            {item === "Product Details" && (product.description || "Premium fashion engineered for everyday durability.")}
+                                            {item === "Shipping & Returns" && "Standard shipping takes 3-5 business days. 7-day hassle-free exchange policy."}
+                                            {item === "Care Instructions" && "Machine wash cold with like colors. Do not bleach. Tumble dry low."}
+                                        </div>
+                                    )}
+                                </div>
 
                             ))}
 

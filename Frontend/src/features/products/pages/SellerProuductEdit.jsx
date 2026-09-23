@@ -55,9 +55,9 @@ const SellerProductEdit = () => {
     // Variant Editor State
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState(null);
-    const [formSize, setFormSize] = useState("");
+    const [formSizes, setFormSizes] = useState([]);
+    const [sizeStocks, setSizeStocks] = useState({});
     const [formColor, setFormColor] = useState("");
-    const [formStock, setFormStock] = useState("");
     const [formImages, setFormImages] = useState([]);
     const [urlInput, setUrlInput] = useState("");
     const [showUrlInput, setShowUrlInput] = useState(false);
@@ -87,9 +87,9 @@ const SellerProductEdit = () => {
 
     const handleOpenAddVariant = () => {
         setEditingIndex(null);
-        setFormSize("");
+        setFormSizes([]);
+        setSizeStocks({});
         setFormColor("");
-        setFormStock("");
         setFormImages([]);
         setUrlInput("");
         setShowUrlInput(false);
@@ -97,16 +97,30 @@ const SellerProductEdit = () => {
         setIsEditorOpen(true);
 
         setTimeout(() => {
-            editorRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            editorRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+            });
         }, 50);
     };
 
     const handleOpenEditVariant = (index) => {
         const v = variants[index];
+
+        const size = getAttributeValue(v.attributes, "size");
+
         setEditingIndex(index);
-        setFormSize(getAttributeValue(v.attributes, "size"));
+        setFormSizes(size ? [size] : []);
+        setSizeStocks(
+            size
+                ? {
+                    [size]: v.stock !== undefined && v.stock !== null
+                        ? String(v.stock)
+                        : "0",
+                }
+                : {}
+        );
         setFormColor(getAttributeValue(v.attributes, "color"));
-        setFormStock(v.stock !== undefined && v.stock !== null ? String(v.stock) : "0");
         setFormImages(v.images ? [...v.images] : []);
         setUrlInput("");
         setShowUrlInput(false);
@@ -114,7 +128,10 @@ const SellerProductEdit = () => {
         setIsEditorOpen(true);
 
         setTimeout(() => {
-            editorRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            editorRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+            });
         }, 50);
     };
 
@@ -163,15 +180,45 @@ const SellerProductEdit = () => {
         setFormImages((prev) => prev.filter((_, idx) => idx !== imgIdxToRemove));
     };
 
+
+    const handleToggleSize = (size) => {
+        setFormSizes((prev) => {
+            if (prev.includes(size)) {
+                const next = prev.filter((item) => item !== size);
+
+                setSizeStocks((stocks) => {
+                    const updated = { ...stocks };
+                    delete updated[size];
+                    return updated;
+                });
+
+                return next;
+            }
+
+            setSizeStocks((stocks) => ({
+                ...stocks,
+                [size]: stocks[size] ?? "",
+            }));
+
+            return [...prev, size];
+        });
+    };
+
+    const handleSizeStockChange = (size, value) => {
+        setSizeStocks((prev) => ({
+            ...prev,
+            [size]: value,
+        }));
+    };
+
     const handleSubmitVariant = (e) => {
         e?.preventDefault();
         setFormError("");
 
-        const trimmedSize = formSize.trim();
         const trimmedColor = formColor.trim();
 
-        if (!trimmedSize) {
-            setFormError("Size is required.");
+        if (formSizes.length === 0) {
+            setFormError("Select at least one size.");
             return;
         }
 
@@ -180,58 +227,151 @@ const SellerProductEdit = () => {
             return;
         }
 
-        if (formStock === "" || isNaN(Number(formStock)) || Number(formStock) < 0) {
-            setFormError("Stock must be a valid non-negative number.");
-            return;
+        // Validate stock for every selected size
+        for (const size of formSizes) {
+            const stockValue = sizeStocks[size];
+
+            if (
+                stockValue === "" ||
+                stockValue === undefined ||
+                stockValue === null ||
+                isNaN(Number(stockValue)) ||
+                Number(stockValue) < 0
+            ) {
+                setFormError(`Enter a valid stock quantity for size ${size}.`);
+                return;
+            }
         }
 
-        // Duplicate variant check (ignoring current index if editing)
-        const isDuplicate = variants.some((v, idx) => {
-            if (editingIndex !== null && idx === editingIndex) return false;
-            const vSize = getAttributeValue(v.attributes, "size").trim().toLowerCase();
-            const vColor = getAttributeValue(v.attributes, "color").trim().toLowerCase();
-            return (
-                vSize === trimmedSize.toLowerCase() &&
-                vColor === trimmedColor.toLowerCase()
-            );
-        });
-
-        if (isDuplicate) {
-            setFormError(`A variant with "${trimmedColor} / ${trimmedSize}" already exists.`);
-            return;
-        }
-
-        const existingVariant = editingIndex !== null ? variants[editingIndex] : {};
-        let existingAttributes = {};
-        if (existingVariant.attributes instanceof Map) {
-            existingAttributes = Object.fromEntries(existingVariant.attributes);
-        } else if (existingVariant.attributes && typeof existingVariant.attributes === "object") {
-            existingAttributes = { ...existingVariant.attributes };
-        }
-
-        const updatedVariant = {
-            ...existingVariant,
-            stock: Number(formStock),
-            attributes: {
-                ...existingAttributes,
-                size: trimmedSize,
-                color: trimmedColor,
-            },
-            images: formImages.map((img) => ({
-                url: typeof img === "string" ? img : img.url,
-            })),
-        };
-
+        // ---------------------------------------------------------
+        // EDIT EXISTING VARIANT
+        // ---------------------------------------------------------
         if (editingIndex !== null) {
+            const existingVariant = variants[editingIndex];
+
+            const selectedSize = formSizes[0];
+
+            const isDuplicate = variants.some((v, idx) => {
+                if (idx === editingIndex) return false;
+
+                const vSize = getAttributeValue(
+                    v.attributes,
+                    "size"
+                )
+                    .trim()
+                    .toLowerCase();
+
+                const vColor = getAttributeValue(
+                    v.attributes,
+                    "color"
+                )
+                    .trim()
+                    .toLowerCase();
+
+                return (
+                    vSize === selectedSize.trim().toLowerCase() &&
+                    vColor === trimmedColor.toLowerCase()
+                );
+            });
+
+            if (isDuplicate) {
+                setFormError(
+                    `A variant with "${trimmedColor} / ${selectedSize}" already exists.`
+                );
+                return;
+            }
+
+            let existingAttributes = {};
+
+            if (existingVariant.attributes instanceof Map) {
+                existingAttributes = Object.fromEntries(
+                    existingVariant.attributes
+                );
+            } else if (
+                existingVariant.attributes &&
+                typeof existingVariant.attributes === "object"
+            ) {
+                existingAttributes = {
+                    ...existingVariant.attributes,
+                };
+            }
+
+            const updatedVariant = {
+                ...existingVariant,
+                stock: Number(sizeStocks[selectedSize]) || 0,
+                attributes: {
+                    ...existingAttributes,
+                    size: selectedSize.trim(),
+                    color: trimmedColor,
+                },
+                images: formImages.map((img) => ({
+                    url: typeof img === "string" ? img : img.url,
+                })),
+            };
+
             setVariants((prev) =>
-                prev.map((v, idx) => (idx === editingIndex ? updatedVariant : v))
+                prev.map((v, idx) =>
+                    idx === editingIndex ? updatedVariant : v
+                )
             );
-        } else {
-            setVariants((prev) => [...prev, updatedVariant]);
+        }
+
+        // ---------------------------------------------------------
+        // ADD NEW VARIANTS
+        // ---------------------------------------------------------
+        else {
+            const newVariants = [];
+
+            for (const size of formSizes) {
+                const trimmedSize = size.trim();
+
+                const isDuplicate = variants.some((v) => {
+                    const vSize = getAttributeValue(
+                        v.attributes,
+                        "size"
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                    const vColor = getAttributeValue(
+                        v.attributes,
+                        "color"
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                    return (
+                        vSize === trimmedSize.toLowerCase() &&
+                        vColor === trimmedColor.toLowerCase()
+                    );
+                });
+
+                if (isDuplicate) {
+                    setFormError(
+                        `A variant with "${trimmedColor} / ${trimmedSize}" already exists.`
+                    );
+                    return;
+                }
+
+                newVariants.push({
+                    stock: Number(sizeStocks[size]) || 0,
+                    attributes: {
+                        size: trimmedSize,
+                        color: trimmedColor,
+                    },
+                    images: formImages.map((img) => ({
+                        url: typeof img === "string" ? img : img.url,
+                    })),
+                });
+            }
+
+            setVariants((prev) => [...prev, ...newVariants]);
         }
 
         setIsEditorOpen(false);
         setEditingIndex(null);
+        setFormSizes([]);
+        setSizeStocks({});
         setFormError("");
     };
 
@@ -468,36 +608,90 @@ const SellerProductEdit = () => {
                                             <label className="text-[10px] uppercase tracking-[0.16em] text-black/40">
                                                 Size *
                                             </label>
+
                                             <span className="text-[9px] uppercase tracking-wider text-black/30">
-                                                e.g. S, M, L, 32
+                                                Select one or more
                                             </span>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {QUICK_SIZES.map((sz) => {
+                                                const selected = formSizes.includes(sz);
+
+                                                return (
+                                                    <button
+                                                        key={sz}
+                                                        type="button"
+                                                        onClick={() => handleToggleSize(sz)}
+                                                        className={`border px-3 py-1.5 text-[10px] font-medium tracking-wider transition-colors ${selected
+                                                                ? "border-black bg-black text-white"
+                                                                : "border-black/10 bg-[#f7f7f5] text-black/60 hover:border-black/30 hover:text-black"
+                                                            }`}
+                                                    >
+                                                        {sz}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
 
                                         <input
                                             type="text"
-                                            value={formSize}
-                                            onChange={(e) => setFormSize(e.target.value)}
-                                            placeholder="Enter size..."
-                                            className="w-full border-b border-black/15 bg-transparent py-2.5 text-[14px] outline-none transition-colors focus:border-black"
+                                            placeholder="Custom size..."
+                                            onKeyDown={(e) => {
+                                                if (e.key !== "Enter") return;
+
+                                                e.preventDefault();
+
+                                                const customSize = e.target.value.trim();
+
+                                                if (!customSize) return;
+
+                                                if (!formSizes.includes(customSize)) {
+                                                    setFormSizes((prev) => [...prev, customSize]);
+
+                                                    setSizeStocks((prev) => ({
+                                                        ...prev,
+                                                        [customSize]: "",
+                                                    }));
+                                                }
+
+                                                e.target.value = "";
+                                            }}
+                                            className="mt-3 w-full border-b border-black/15 bg-transparent py-2.5 text-[14px] outline-none transition-colors focus:border-black"
                                         />
 
-                                        {/* Quick Size Chips */}
-                                        <div className="mt-3 flex flex-wrap gap-1.5">
-                                            {QUICK_SIZES.map((sz) => (
-                                                <button
-                                                    key={sz}
-                                                    type="button"
-                                                    onClick={() => setFormSize(sz)}
-                                                    className={`border px-2 py-0.5 text-[10px] font-medium tracking-wider transition-colors ${
-                                                        formSize === sz
-                                                            ? "border-black bg-black text-white"
-                                                            : "border-black/10 bg-[#f7f7f5] text-black/60 hover:border-black/30 hover:text-black"
-                                                    }`}
-                                                >
-                                                    {sz}
-                                                </button>
-                                            ))}
-                                        </div>
+                                        {formSizes.length > 0 && (
+                                            <div className="mt-5 space-y-3">
+                                                <p className="text-[9px] uppercase tracking-[0.16em] text-black/35">
+                                                    Stock by size
+                                                </p>
+
+                                                {formSizes.map((size) => (
+                                                    <div
+                                                        key={size}
+                                                        className="flex items-center justify-between border-b border-black/[0.06] pb-2"
+                                                    >
+                                                        <span className="text-[12px] font-medium">
+                                                            {size}
+                                                        </span>
+
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={sizeStocks[size] ?? ""}
+                                                            onChange={(e) =>
+                                                                handleSizeStockChange(
+                                                                    size,
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="0"
+                                                            className="w-24 border-b border-black/15 bg-transparent py-1.5 text-right text-[13px] outline-none focus:border-black"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Color */}
@@ -521,7 +715,7 @@ const SellerProductEdit = () => {
                                     </div>
                                 </div>
 
-                                {/* Stock */}
+                                {/* Stock
                                 <div className="max-w-xs">
                                     <label className="mb-2 block text-[10px] uppercase tracking-[0.16em] text-black/40">
                                         Stock Quantity *
@@ -534,7 +728,7 @@ const SellerProductEdit = () => {
                                         placeholder="0"
                                         className="w-full border-b border-black/15 bg-transparent py-2.5 text-[14px] outline-none transition-colors focus:border-black"
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* Variant Images */}
                                 <div>
@@ -738,8 +932,8 @@ const SellerProductEdit = () => {
                             {saved
                                 ? "Changes saved"
                                 : saving
-                                ? "Saving..."
-                                : "Save changes"}
+                                    ? "Saving..."
+                                    : "Save changes"}
                         </button>
                     </div>
                 </section>
