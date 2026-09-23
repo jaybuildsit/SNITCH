@@ -135,11 +135,29 @@ const ProductDetails = () => {
 
     // Helper to extract size keys from a variant's sizes map/object
     const getVariantSizesList = (variant) => {
-        if (!variant || !variant.sizes) return [];
-        if (variant.sizes instanceof Map) {
-            return Array.from(variant.sizes.keys());
+        if (!variant) return [];
+
+        // New variant structure:
+        // attributes: { color: "Black", size: "M" }
+        const attributeSize =
+            variant.attributes instanceof Map
+                ? variant.attributes.get("size") || variant.attributes.get("Size")
+                : variant.attributes?.size || variant.attributes?.Size;
+
+        if (attributeSize) {
+            return [attributeSize];
         }
-        return Object.keys(variant.sizes);
+
+        // Backward compatibility for variants using sizes map
+        if (variant.sizes) {
+            if (variant.sizes instanceof Map) {
+                return Array.from(variant.sizes.keys());
+            }
+
+            return Object.keys(variant.sizes);
+        }
+
+        return [];
     };
 
     // Calculate available sizes depending on whether a color variant is selected
@@ -180,17 +198,9 @@ const ProductDetails = () => {
 
     // Extract stock for concrete variant
     let concreteStock = null;
+
     if (concreteVariant) {
-        if (concreteVariant.sizes) {
-            if (concreteVariant.sizes instanceof Map) {
-                concreteStock = concreteVariant.sizes.get(selectedSize);
-            } else {
-                concreteStock = concreteVariant.sizes[selectedSize];
-            }
-        }
-        if (concreteStock === undefined || concreteStock === null) {
-            concreteStock = concreteVariant.stock ?? Infinity;
-        }
+        concreteStock = concreteVariant.stock ?? 0;
     }
 
     const concreteVariantImage = getImageUrl(concreteVariant?.images?.[0]);
@@ -275,10 +285,9 @@ const ProductDetails = () => {
                                             border
                                             transition-all
                                             duration-200
-                                            ${
-                                                activeImage === index
-                                                    ? "border-black"
-                                                    : "border-transparent hover:border-gray-400"
+                                            ${activeImage === index
+                                                ? "border-black"
+                                                : "border-transparent hover:border-gray-400"
                                             }
                                         `}
                                     >
@@ -400,10 +409,9 @@ const ProductDetails = () => {
                                                 onClick={() => handleColorSelect(color)}
                                                 className={`
                                                     flex flex-col items-center gap-1.5 p-1.5 rounded-xl border transition-all duration-200
-                                                    ${
-                                                        isSelected
-                                                            ? "border-black bg-gray-50 ring-1 ring-black"
-                                                            : "border-gray-200 hover:border-gray-400 bg-white"
+                                                    ${isSelected
+                                                        ? "border-black bg-gray-50 ring-1 ring-black"
+                                                        : "border-gray-200 hover:border-gray-400 bg-white"
                                                     }
                                                 `}
                                             >
@@ -465,10 +473,9 @@ const ProductDetails = () => {
                                             transition-all
                                             duration-200
 
-                                            ${
-                                                selectedSize === size
-                                                    ? "bg-black text-white border-black"
-                                                    : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
+                                            ${selectedSize === size
+                                                ? "bg-black text-white border-black"
+                                                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
                                             }
                                         `}
                                     >
