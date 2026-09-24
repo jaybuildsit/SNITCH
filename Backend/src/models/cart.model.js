@@ -36,6 +36,8 @@ const cartSchema = new mongoose.Schema({
 
 })
 
+
+
 const cartModel = mongoose.model("cart", cartSchema);
 
 
