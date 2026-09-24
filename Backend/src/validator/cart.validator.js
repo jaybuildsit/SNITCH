@@ -12,7 +12,10 @@ const validateRequest=(req,res,next)=>{
 
 export const validateAddToCart=[
     param("productId").isMongoId().withMessage("Invalid ProductID"),
-    param("variantId").optional().isMongoId().withMessage("Invalid VariantId"),
+    body("variantId")
+    .optional({ values: "null" })
+    .isMongoId()
+    .withMessage("Invalid VariantId"),
     body("quantity").optional().isInt({min:1}).withMessage("Quantity must be atleast 1"),
     validateRequest
 ]

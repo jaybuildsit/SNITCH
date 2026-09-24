@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useProduct } from "../hooks/useProduct";
+import { useCart } from "../../cart/hooks/UseCart";
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -10,6 +11,10 @@ const ProductDetails = () => {
         handleGetProductById,
         handleGetAllProducts,
     } = useProduct();
+
+    const {
+        handleAddItem
+    } = useCart()
 
     const [product, setProduct] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -213,20 +218,47 @@ const ProductDetails = () => {
     };
 
     // Action handlers using concrete variant or base product
-    const handleAddToCart = () => {
+    // const handleAddToCart = () => {
+    //     if (!selectedSize) {
+    //         alert("Please select a size");
+    //         return;
+    //     }
+
+    //     console.log("ADD TO CART", {
+    //         productId: product._id,
+    //         variantId: concreteVariant?._id || null,
+    //         color: selectedColor,
+    //         size: selectedSize,
+    //         quantity,
+    //         stock: concreteStock,
+    //     });
+    // };
+
+    const handleAddToCart = async () => {
         if (!selectedSize) {
             alert("Please select a size");
             return;
         }
 
-        console.log("ADD TO CART", {
-            productId: product._id,
-            variantId: concreteVariant?._id || null,
-            color: selectedColor,
-            size: selectedSize,
-            quantity,
-            stock: concreteStock,
-        });
+        if (concreteVariant && (!concreteStock || concreteStock <= 0)) {
+            alert("This variant is out of stock");
+            return;
+        }
+
+        try {
+            const data = await handleAddItem({
+                productId: product._id,
+                variantId: concreteVariant?._id || null,
+                quantity,
+            });
+
+            console.log("ADD TO CART SUCCESS:", data);
+        } catch (error) {
+            console.error(
+                "ADD TO CART ERROR:",
+                error.response?.data
+            );
+        }
     };
 
     const handleBuyNow = () => {
@@ -571,6 +603,7 @@ const ProductDetails = () => {
                                     transition-all
                                     ${concreteStock === 0 ? "opacity-50 cursor-not-allowed hover:bg-white hover:text-black" : ""}
                                 `}
+
                             >
                                 Add To Cart
                             </button>
