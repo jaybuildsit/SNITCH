@@ -1,13 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useProduct } from "../hooks/useProduct";
+import { useCart } from "../../cart/hooks/UseCart";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85";
 
 const Home = () => {
   const navigate = useNavigate();
+
+  const { handleGetCart } = useCart();
+
+  const [cartCount, setCartCount] = useState(0);
 
   const products =
     useSelector((state) => state.product.Products) || [];
@@ -18,6 +23,26 @@ const Home = () => {
 
   useEffect(() => {
     handleGetAllProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      try {
+        const cart = await handleGetCart();
+
+        const count =
+          cart?.items?.reduce(
+            (total, item) => total + (item.quantity || 0),
+            0
+          ) || 0;
+
+        setCartCount(count);
+      } catch (error) {
+        console.error("GET CART COUNT ERROR:", error);
+      }
+    };
+
+    fetchCartCount();
   }, []);
 
   const getImage = (product) => {
@@ -58,7 +83,7 @@ const Home = () => {
 
         <div className="mx-auto flex h-[68px] max-w-[1400px] items-center justify-between px-6 md:px-10">
 
-          {/* LEFT */}  
+          {/* LEFT */}
           <div className="flex items-center gap-10">
 
             {/* Menu */}
@@ -149,6 +174,7 @@ const Home = () => {
 
             {/* CART */}
 
+
             <button
               onClick={() => navigate("/cart")}
               className="flex h-9 items-center gap-2 rounded-full bg-black px-4 text-[9px] font-medium uppercase tracking-[0.15em] text-white transition-transform hover:scale-[1.03]"
@@ -156,9 +182,8 @@ const Home = () => {
               Cart
 
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[8px] text-black">
-                0
+                {cartCount}
               </span>
-
             </button>
 
           </div>
@@ -463,102 +488,102 @@ const Home = () => {
 
       <footer className="bg-[#111] text-white">
 
-                <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14">
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
-                        {/* BRAND */}
+            {/* BRAND */}
 
-                        <div>
+            <div>
 
-                            <h2 className="text-3xl font-bold tracking-[0.3em]">
-                                SNITCH
-                            </h2>
+              <h2 className="text-3xl font-bold tracking-[0.3em]">
+                SNITCH
+              </h2>
 
-                            <p className="mt-5 text-sm text-gray-400 leading-6 max-w-xs">
-                                Redefining everyday style.
-                                Premium fashion for those who
-                                move different.
-                            </p>
+              <p className="mt-5 text-sm text-gray-400 leading-6 max-w-xs">
+                Redefining everyday style.
+                Premium fashion for those who
+                move different.
+              </p>
 
-                        </div>
+            </div>
 
-                        {/* SHOP */}
+            {/* SHOP */}
 
-                        <div>
+            <div>
 
-                            <h3 className="font-medium mb-5">
-                                Shop
-                            </h3>
+              <h3 className="font-medium mb-5">
+                Shop
+              </h3>
 
-                            <div className="space-y-3 text-sm text-gray-400">
+              <div className="space-y-3 text-sm text-gray-400">
 
-                                <p>Men</p>
-                                <p>Women</p>
-                                <p>New Arrivals</p>
-                                <p>Collections</p>
-                                <p>Sale</p>
+                <p>Men</p>
+                <p>Women</p>
+                <p>New Arrivals</p>
+                <p>Collections</p>
+                <p>Sale</p>
 
-                            </div>
+              </div>
 
-                        </div>
+            </div>
 
-                        {/* HELP */}
+            {/* HELP */}
 
-                        <div>
+            <div>
 
-                            <h3 className="font-medium mb-5">
-                                Help
-                            </h3>
+              <h3 className="font-medium mb-5">
+                Help
+              </h3>
 
-                            <div className="space-y-3 text-sm text-gray-400">
+              <div className="space-y-3 text-sm text-gray-400">
 
-                                <p>FAQ</p>
-                                <p>Shipping</p>
-                                <p>Returns & Exchange</p>
-                                <p>Size Guide</p>
-                                <p>Track Order</p>
+                <p>FAQ</p>
+                <p>Shipping</p>
+                <p>Returns & Exchange</p>
+                <p>Size Guide</p>
+                <p>Track Order</p>
 
-                            </div>
+              </div>
 
-                        </div>
+            </div>
 
-                        {/* COMPANY */}
+            {/* COMPANY */}
 
-                        <div>
+            <div>
 
-                            <h3 className="font-medium mb-5">
-                                Company
-                            </h3>
+              <h3 className="font-medium mb-5">
+                Company
+              </h3>
 
-                            <div className="space-y-3 text-sm text-gray-400">
+              <div className="space-y-3 text-sm text-gray-400">
 
-                                <p>About Us</p>
-                                <p>Contact Us</p>
-                                <p>Terms of Service</p>
-                                <p>Privacy Policy</p>
+                <p>About Us</p>
+                <p>Contact Us</p>
+                <p>Terms of Service</p>
+                <p>Privacy Policy</p>
 
-                            </div>
+              </div>
 
-                        </div>
+            </div>
 
-                    </div>
+          </div>
 
-                    <div className="border-t border-gray-800 mt-12 pt-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-gray-500">
+          <div className="border-t border-gray-800 mt-12 pt-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-gray-500">
 
-                        <p>
-                            © 2026 SNITCH. All Rights Reserved.
-                        </p>
+            <p>
+              © 2026 SNITCH. All Rights Reserved.
+            </p>
 
-                        <p>
-                            India (INR ₹) · English
-                        </p>
+            <p>
+              India (INR ₹) · English
+            </p>
 
-                    </div>
+          </div>
 
-                </div>
+        </div>
 
-            </footer>
+      </footer>
 
     </main>
   );

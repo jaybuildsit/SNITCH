@@ -23,6 +23,9 @@ const ProductDetails = () => {
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [showCartMessage, setShowCartMessage] = useState(false);
+
+    const [cartCount, setCartCount] = useState(0);
 
     // VARIANT STATES
     const [selectedColor, setSelectedColor] = useState(null);
@@ -38,6 +41,19 @@ const ProductDetails = () => {
                 const productData = await handleGetProductById(id);
 
                 setProduct(productData);
+
+
+                // GET CART
+                const cart = await handleGetCart();
+
+                const count =
+                    cart?.items?.reduce(
+                        (total, item) => total + (item.quantity || 0),
+                        0
+                    ) || 0;
+
+                setCartCount(count);
+
 
                 // Fetch all products for related products
                 const allProducts = await handleGetAllProducts();
@@ -255,6 +271,22 @@ const ProductDetails = () => {
             });
 
             console.log("ADD TO CART SUCCESS:", data);
+
+            const cart = await handleGetCart();
+
+            const count =
+                cart?.items?.reduce(
+                    (total, item) => total + (item.quantity || 0),
+                    0
+                ) || 0;
+
+            setCartCount(count);
+
+            setShowCartMessage(true);
+
+            setTimeout(() => {
+                setShowCartMessage(false);
+            }, 2500);
         } catch (error) {
             console.error(
                 "ADD TO CART ERROR:",
@@ -337,6 +369,94 @@ const ProductDetails = () => {
 
     return (
         <div className="min-h-screen bg-white text-black">
+
+            <header className="border-b border-black/10 bg-[#f8f8f6]">
+
+                <div className="mx-auto flex h-[68px] max-w-[1400px] items-center justify-between px-6 md:px-10">
+
+                    {/* LEFT */}
+                    <div className="flex items-center gap-10">
+
+                        {/* Menu */}
+                        <button
+                            aria-label="Menu"
+                            className="group flex h-8 w-8 flex-col items-center justify-center gap-[5px]"
+                        >
+                            <span className="h-[1px] w-[17px] bg-black transition-all duration-300 group-hover:w-[11px]" />
+                            <span className="h-[1px] w-[11px] bg-black transition-all duration-300 group-hover:w-[17px]" />
+                        </button>
+
+                        {/* Navigation */}
+                        <nav className="hidden items-center gap-8 md:flex">
+
+                            <button className="text-[10px] font-medium uppercase tracking-[0.16em]">
+                                Men
+                            </button>
+
+                            <button className="text-[10px] font-medium uppercase tracking-[0.16em] text-black/45 transition-colors hover:text-black">
+                                Women
+                            </button>
+
+                            <button className="text-[10px] font-medium uppercase tracking-[0.16em] text-black/45 transition-colors hover:text-black">
+                                New Arrivals
+                            </button>
+
+                        </nav>
+
+                    </div>
+
+
+                    {/* CENTER LOGO */}
+
+                    <button
+                        onClick={() => navigate("/")}
+                        className="absolute left-1/2 -translate-x-1/2 text-[22px] font-black tracking-[-0.08em]"
+                    >
+                        SNITCH
+                    </button>
+
+
+                    {/* RIGHT */}
+
+                    <div className="flex items-center gap-3">
+
+                        {/* Search */}
+
+                        <button
+                            aria-label="Search"
+                            className="hidden h-9 w-9 items-center justify-center rounded-full border border-black/10 transition-all hover:bg-black hover:text-white sm:flex"
+                        >
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                            >
+                                <circle cx="11" cy="11" r="6" />
+                                <path d="m16 16 5 5" />
+                            </svg>
+                        </button>
+
+                        {/* CART */}
+
+                        <button
+                            onClick={() => navigate("/cart")}
+                            className="flex h-9 items-center gap-2 rounded-full bg-black px-4 text-[9px] font-medium uppercase tracking-[0.15em] text-white transition-transform hover:scale-[1.03]"
+                        >
+                            Cart
+
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[8px] text-black">
+                                {cartCount}
+                            </span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </header>
 
             {/* =========================================
                 PRODUCT SECTION
@@ -666,7 +786,7 @@ const ProductDetails = () => {
                                 Add To Cart
                             </button>
 
-                           
+
 
                             <button
                                 onClick={handleBuyNow}
@@ -1023,6 +1143,203 @@ const ProductDetails = () => {
                 </div>
 
             </footer>
+
+            {/* =========================================
+    ADD TO CART SUCCESS POPUP
+========================================= */}
+
+            {showCartMessage && (
+                <div
+                    className="
+            fixed
+            z-50
+            bottom-6
+            right-6
+            w-[360px]
+            max-w-[calc(100vw-32px)]
+            bg-white
+            border
+            border-black/10
+            rounded-2xl
+            shadow-[0_20px_60px_rgba(0,0,0,0.15)]
+            overflow-hidden
+            animate-[slideIn_0.35s_ease-out]
+        "
+                >
+                    <div className="p-5">
+
+                        {/* TOP */}
+                        <div className="flex items-start justify-between">
+
+                            <div className="flex items-center gap-2">
+                                <div className="
+                        flex
+                        h-6
+                        w-6
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-black
+                        text-white
+                    ">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.5"
+                                    >
+                                        <path
+                                            d="M5 12l4 4L19 6"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <p className="
+                        text-[11px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.16em]
+                    ">
+                                    Added to cart
+                                </p>
+                            </div>
+
+                            {/* CLOSE */}
+                            <button
+                                onClick={() => setShowCartMessage(false)}
+                                className="
+                        text-black/40
+                        hover:text-black
+                        transition
+                    "
+                                aria-label="Close"
+                            >
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                >
+                                    <path
+                                        d="M6 6l12 12M18 6L6 18"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            </button>
+
+                        </div>
+
+                        {/* PRODUCT */}
+                        <div className="mt-4 flex gap-4">
+
+                            {/* IMAGE */}
+                            <div className="
+                    w-[64px]
+                    h-[78px]
+                    shrink-0
+                    overflow-hidden
+                    rounded-xl
+                    bg-[#f5f5f5]
+                ">
+                                <img
+                                    src={
+                                        concreteVariantImage ||
+                                        getImageUrl(images?.[0])
+                                    }
+                                    alt={product.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+
+                            {/* INFO */}
+                            <div className="min-w-0 pt-0.5">
+
+                                <p className="
+                        text-sm
+                        font-medium
+                        leading-5
+                        line-clamp-2
+                    ">
+                                    {product.title}
+                                </p>
+
+                                <div className="
+                        mt-2
+                        flex
+                        flex-wrap
+                        items-center
+                        gap-x-2
+                        gap-y-1
+                        text-xs
+                        text-black/50
+                    ">
+
+                                    {selectedColor && (
+                                        <>
+                                            <span>{selectedColor}</span>
+                                            <span>·</span>
+                                        </>
+                                    )}
+
+                                    {selectedSize && (
+                                        <>
+                                            <span>Size {selectedSize}</span>
+                                            <span>·</span>
+                                        </>
+                                    )}
+
+                                    <span>Qty {quantity}</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {/* ACTION */}
+                        <button
+                            onClick={() => navigate("/cart")}
+                            className="
+                    mt-5
+                    w-full
+                    h-11
+                    rounded-full
+                    bg-black
+                    text-white
+                    text-[10px]
+                    font-medium
+                    uppercase
+                    tracking-[0.16em]
+                    transition-all
+                    duration-200
+                    hover:bg-[#222]
+                    active:scale-[0.98]
+                "
+                        >
+                            View Cart →
+                        </button>
+
+                    </div>
+
+                    {/* PROGRESS BAR */}
+                    <div className="h-[2px] bg-black/5">
+                        <div
+                            className="
+                    h-full
+                    bg-black
+                    animate-[shrink_2.5s_linear_forwards]
+                "
+                        />
+                    </div>
+
+                </div>
+            )}
 
         </div>
     );

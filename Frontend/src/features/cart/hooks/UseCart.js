@@ -19,6 +19,8 @@ export const useCart = () => {
             size
         });
 
+        dispatch(setItems(data.cart.items));
+
         return data;
     }
     async function handleGetCart() {
