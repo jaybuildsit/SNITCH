@@ -95,21 +95,58 @@ export const addToCart = async (req, res) => {
     });
 };
 
-export const getCart = async (req, res) => {
-    const user = req.user
 
-    let cart = await cartModel.findOne({ user: user._id }).populate("items.product")
+
+export const getCart = async (req, res) => {
+    const user = req.user;
+
+    let cart = await cartModel
+        .findOne({ user: user._id })
+        .populate("items.product");
 
     if (!cart) {
-        cart = await cartModel.create({ user: user._id })
+        cart = await cartModel.create({
+            user: user._id,
+        });
     }
+
+    const cartData = cart.toObject({
+        flattenMaps: true,
+    });
+
+    cartData.items = cartData.items.map((item) => {
+        if (item.variant && item.product?.variants) {
+            const variant = item.product.variants.find(
+                (variant) =>
+                    variant._id.toString() === item.variant.toString()
+            );
+
+            if (variant) {
+                return {
+                    ...item,
+                    variant,
+                };
+            }
+        }
+
+        return item;
+    });
+
+    console.log(
+        "CART ITEMS:",
+        cartData.items.map((item) => ({
+            product: item.product?.title,
+            variant: item.variant,
+            size: item.size,
+        }))
+    );
 
     return res.status(200).json({
         message: "Cart Fetched Successfully",
         success: true,
-        cart
-    })
-}
+        cart: cartData,
+    });
+};
 
 
 export const updateCartItem = async (req, res) => {

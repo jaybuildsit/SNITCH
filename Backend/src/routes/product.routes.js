@@ -22,7 +22,13 @@ const upload = multer({
 const router = express.Router();
 
 router.get("/seller", authenticateSeller, getSellerProducts);
-router.post("/", authenticateSeller, upload.array("images", 7),createProductValidator, createProduct);
+router.post(
+    "/",
+    authenticateSeller,
+    upload.array("images", 30),
+    createProductValidator,
+    createProduct
+);
 router.post("/upload-image", authenticateSeller, upload.single("image"), uploadProductImage);
 router.delete("/:productId", authenticateSeller, deleteProduct);
 router.put("/:productId", authenticateSeller, updateProduct);

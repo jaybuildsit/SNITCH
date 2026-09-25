@@ -16,8 +16,8 @@ const productScheme = new mongoose.Schema({
         required: true
     },
     price: {
-        type:priceSchema,
-        required:true
+        type: priceSchema,
+        required: true
     },
     images: [{
         url: {
@@ -25,6 +25,11 @@ const productScheme = new mongoose.Schema({
             required: true
         },
     }],
+
+    stock: {
+        type: Number,
+        default: 0
+    },
     variants: [
         {
             sku: {
@@ -52,9 +57,9 @@ const productScheme = new mongoose.Schema({
                 of: Number
             },
             price: {
-                type:priceSchema,
+                type: priceSchema,
                 // required:true
-                
+
             }
         }
     ]

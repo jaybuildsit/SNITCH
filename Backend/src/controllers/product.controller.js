@@ -2,11 +2,55 @@ import productModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.service.js";
 
 export async function createProduct(req, res) {
-    const { title, description, priceAmount, priceCurrency } = req.body;
+    const {
+        title,
+        description,
+        priceAmount,
+        priceCurrency,
+        stock,
+        variants: variantsJson,
+        productImageCount,
+        variantImageCounts,
+    } = req.body;
+
     const seller = req.user;
 
-    const images = await Promise.all(
-        req.files.map(async (file) => {
+
+
+    let variants = [];
+
+    if (variantsJson) {
+        try {
+            variants = JSON.parse(variantsJson);
+        } catch (error) {
+            return res.status(400).json({
+                message: "Invalid variants data",
+                success: false,
+            });
+        }
+    }
+
+
+
+    const productImagesCount = Number(productImageCount) || 0;
+
+    let imageCounts = [];
+
+    if (variantImageCounts) {
+        try {
+            imageCounts = JSON.parse(variantImageCounts);
+        } catch (error) {
+            return res.status(400).json({
+                message: "Invalid variant image data",
+                success: false,
+            });
+        }
+    }
+
+
+
+    const uploadedImages = await Promise.all(
+        (req.files || []).map(async (file) => {
             return await uploadFile({
                 buffer: file.buffer,
                 fileName: file.originalname,
@@ -14,18 +58,63 @@ export async function createProduct(req, res) {
         })
     );
 
+
+
+    let imageIndex = 0;
+
+    const productImages = uploadedImages
+        .slice(imageIndex, imageIndex + productImagesCount)
+        .map((image) => ({
+            url: image.url,
+        }));
+
+    imageIndex += productImagesCount;
+
+
+
+    const preparedVariants = variants.map((variant, index) => {
+        const count = Number(imageCounts[index]) || 0;
+
+        const variantImages = uploadedImages
+            .slice(imageIndex, imageIndex + count)
+            .map((image) => ({
+                url: image.url,
+            }));
+
+        imageIndex += count;
+
+        return {
+            ...variant,
+            stock: Number(variant.stock) || 0,
+            attributes: variant.attributes || {},
+            images: variantImages,
+        };
+    });
+
+
     const product = await productModel.create({
         title,
         description,
+
         price: {
-            amount: priceAmount,
+            amount: Number(priceAmount),
             currency: priceCurrency,
         },
-        images,
+
+        stock: Number(stock) || 0,
+
+        images: productImages,
+
+        variants: preparedVariants,
+
         seller: seller._id,
     });
 
-    res.status(201).json({ message: "Product Created Successfully!!!", success: true, product });
+    return res.status(201).json({
+        message: "Product Created Successfully!!!",
+        success: true,
+        product,
+    });
 }
 
 export async function getSellerProducts(req, res) {
@@ -109,10 +198,26 @@ export async function updateProduct(req, res) {
         });
     }
 
-    if (title !== undefined) product.title = title;
-    if (description !== undefined) product.description = description;
-    if (price !== undefined) product.price = price;
-    if (variants !== undefined) product.variants = variants;
+    if (title !== undefined) {
+        product.title = title;
+    }
+
+    if (description !== undefined) {
+        product.description = description;
+    }
+
+    if (price !== undefined) {
+        product.price = price;
+    }
+
+    if (variants !== undefined) {
+        product.variants = variants.map((variant) => ({
+            ...variant,
+            attributes: new Map(
+                Object.entries(variant.attributes || {})
+            ),
+        }));
+    }
 
     await product.save();
 

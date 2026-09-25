@@ -58,25 +58,25 @@ const Cart = () => {
     };
 
     const handleRemove = async (itemId) => {
-    try {
-        setRemovingItem(itemId);
+        try {
+            setRemovingItem(itemId);
 
-        await handleRemoveCartItem(itemId);
+            await handleRemoveCartItem(itemId);
 
-        // Fetch fresh populated cart
-        const freshCart = await handleGetCart();
+            // Fetch fresh populated cart
+            const freshCart = await handleGetCart();
 
-        setCart(freshCart);
+            setCart(freshCart);
 
-    } catch (error) {
-        console.error(
-            "REMOVE CART ERROR:",
-            error.response?.data || error
-        );
-    } finally {
-        setRemovingItem(null);
-    }
-};
+        } catch (error) {
+            console.error(
+                "REMOVE CART ERROR:",
+                error.response?.data || error
+            );
+        } finally {
+            setRemovingItem(null);
+        }
+    };
 
     if (loading) {
         return (
@@ -170,6 +170,7 @@ const Cart = () => {
                                 const product = item.product;
 
                                 const productImage =
+                                    item.variant?.images?.[0]?.url ||
                                     product?.images?.[0]?.url;
 
                                 const productName =

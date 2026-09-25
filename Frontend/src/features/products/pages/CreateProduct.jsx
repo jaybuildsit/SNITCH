@@ -13,16 +13,18 @@ export const CreateProduct = () => {
   const navigate = useNavigate();
   const { handleCreateProduct } = useProduct();
 
-  // Form State
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     priceAmount: '',
     priceCurrency: 'INR',
+    stock: '',
   });
 
   // Images state: array of { file, previewUrl, id }
   const [images, setImages] = useState([]);
+  const [variants, setVariants] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -148,7 +150,39 @@ export const CreateProduct = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submission handler
+
+  const handleAddVariant = () => {
+    setVariants((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        color: "",
+        size: "",
+        stock: "",
+        images: [],
+      },
+    ]);
+  };
+
+  const handleVariantChange = (id, field, value) => {
+    setVariants((prev) =>
+      prev.map((variant) =>
+        variant.id === id
+          ? {
+            ...variant,
+            [field]: value,
+          }
+          : variant
+      )
+    );
+  };
+
+  const handleRemoveVariant = (id) => {
+    setVariants((prev) =>
+      prev.filter((variant) => variant.id !== id)
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFeedback(null);
@@ -261,11 +295,10 @@ export const CreateProduct = () => {
         {/* Feedback Banner */}
         {feedback && (
           <div
-            className={`mb-8 px-4 py-3 rounded-lg text-[13px] border flex items-start gap-3 ${
-              feedback.type === 'success'
-                ? 'bg-neutral-50 text-neutral-800 border-neutral-200'
-                : 'bg-rose-50 text-rose-800 border-rose-200'
-            }`}
+            className={`mb-8 px-4 py-3 rounded-lg text-[13px] border flex items-start gap-3 ${feedback.type === 'success'
+              ? 'bg-neutral-50 text-neutral-800 border-neutral-200'
+              : 'bg-rose-50 text-rose-800 border-rose-200'
+              }`}
           >
             <div className="mt-0.5 shrink-0">
               {feedback.type === 'success' ? (
@@ -283,6 +316,7 @@ export const CreateProduct = () => {
         )}
 
         {/* ── Two-column layout ───────────────────────────────────────── */}
+
         <form onSubmit={handleSubmit} noValidate>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
@@ -307,13 +341,12 @@ export const CreateProduct = () => {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative group cursor-pointer rounded-xl border transition-all duration-200 flex flex-col items-center justify-center text-center select-none ${
-                  isDragging
-                    ? 'border-neutral-800 bg-neutral-50 scale-[0.995]'
-                    : images.length === 0
-                      ? 'border-neutral-200 border-dashed bg-neutral-50/60 hover:border-neutral-400 hover:bg-neutral-50'
-                      : 'border-neutral-200 border-dashed bg-transparent hover:border-neutral-400'
-                } ${images.length === 0 ? 'py-20 px-8' : 'py-6 px-6'}`}
+                className={`relative group cursor-pointer rounded-xl border transition-all duration-200 flex flex-col items-center justify-center text-center select-none ${isDragging
+                  ? 'border-neutral-800 bg-neutral-50 scale-[0.995]'
+                  : images.length === 0
+                    ? 'border-neutral-200 border-dashed bg-neutral-50/60 hover:border-neutral-400 hover:bg-neutral-50'
+                    : 'border-neutral-200 border-dashed bg-transparent hover:border-neutral-400'
+                  } ${images.length === 0 ? 'py-20 px-8' : 'py-6 px-6'}`}
               >
                 <input
                   ref={fileInputRef}
@@ -362,11 +395,10 @@ export const CreateProduct = () => {
                         key={img.id}
                         onClick={(e) => handleSetPrimary(index, e)}
                         title={isPrimary ? 'Primary image' : 'Click to set as primary'}
-                        className={`group relative overflow-hidden rounded-md bg-neutral-100 cursor-pointer transition-all duration-200 ${
-                          isPrimary
-                            ? 'col-span-2 sm:col-span-2 row-span-2 aspect-square ring-[1.5px] ring-neutral-800 ring-offset-1'
-                            : 'aspect-square border border-neutral-200 hover:border-neutral-400'
-                        }`}
+                        className={`group relative overflow-hidden rounded-md bg-neutral-100 cursor-pointer transition-all duration-200 ${isPrimary
+                          ? 'col-span-2 sm:col-span-2 row-span-2 aspect-square ring-[1.5px] ring-neutral-800 ring-offset-1'
+                          : 'aspect-square border border-neutral-200 hover:border-neutral-400'
+                          }`}
                       >
                         <img
                           src={img.previewUrl}
@@ -432,11 +464,10 @@ export const CreateProduct = () => {
                     placeholder="Enter product name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className={`w-full px-3.5 py-[10px] text-[14px] bg-white border rounded-md text-neutral-900 placeholder:text-neutral-300 focus:outline-none transition-all duration-150 ${
-                      errors.name
-                        ? 'border-rose-300 focus:border-rose-400 focus:ring-2 focus:ring-rose-100'
-                        : 'border-neutral-200 hover:border-neutral-300 focus:border-neutral-800 focus:ring-2 focus:ring-neutral-100'
-                    }`}
+                    className={`w-full px-3.5 py-[10px] text-[14px] bg-white border rounded-md text-neutral-900 placeholder:text-neutral-300 focus:outline-none transition-all duration-150 ${errors.name
+                      ? 'border-rose-300 focus:border-rose-400 focus:ring-2 focus:ring-rose-100'
+                      : 'border-neutral-200 hover:border-neutral-300 focus:border-neutral-800 focus:ring-2 focus:ring-neutral-100'
+                      }`}
                   />
                   {errors.name && (
                     <p className="text-[11px] text-rose-500 mt-1.5">{errors.name}</p>
@@ -471,11 +502,10 @@ export const CreateProduct = () => {
                     Price
                   </label>
                   <div
-                    className={`flex items-stretch bg-white border rounded-md overflow-hidden transition-all duration-150 focus-within:ring-2 ${
-                      errors.priceAmount
-                        ? 'border-rose-300 focus-within:border-rose-400 focus-within:ring-rose-100'
-                        : 'border-neutral-200 hover:border-neutral-300 focus-within:border-neutral-800 focus-within:ring-neutral-100'
-                    }`}
+                    className={`flex items-stretch bg-white border rounded-md overflow-hidden transition-all duration-150 focus-within:ring-2 ${errors.priceAmount
+                      ? 'border-rose-300 focus-within:border-rose-400 focus-within:ring-rose-100'
+                      : 'border-neutral-200 hover:border-neutral-300 focus-within:border-neutral-800 focus-within:ring-neutral-100'
+                      }`}
                   >
                     {/* Currency selector */}
                     <div className="relative shrink-0 border-r border-neutral-200">

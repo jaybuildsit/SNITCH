@@ -118,7 +118,24 @@ const ProductDetails = () => {
         );
     }
 
-    const images = product.images || [];
+    const variants = product.variants || [];
+
+    const images =
+        selectedColor && variants.length > 0
+            ? variants
+                .filter((v) => {
+                    const vColor =
+                        v.attributes instanceof Map
+                            ? v.attributes.get("color") ||
+                            v.attributes.get("Color")
+                            : v.attributes?.color ||
+                            v.attributes?.Color;
+
+                    return vColor === selectedColor;
+                })
+                .flatMap((v) => v.images || [])
+            : product.images || [];
+
     const price = product.price?.amount || 0;
     const currency = product.price?.currency || "INR";
     const formattedPrice = new Intl.NumberFormat("en-IN").format(price);
@@ -126,7 +143,7 @@ const ProductDetails = () => {
     // =========================================
     // VARIANT HELPER LOGIC
     // =========================================
-    const variants = product.variants || [];
+    // const variants = product.variants || [];
 
     // Extract unique colors and pick their first available thumbnail image
     const variantColors = Array.from(
@@ -232,8 +249,8 @@ const ProductDetails = () => {
         setSelectedColor(color);
         setSelectedSize(null);
         setQuantity(1);
+        setActiveImage(0);
     };
-
     // Action handlers using concrete variant or base product
     // const handleAddToCart = () => {
     //     if (!selectedSize) {
