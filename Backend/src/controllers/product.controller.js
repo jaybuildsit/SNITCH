@@ -16,7 +16,6 @@ export async function createProduct(req, res) {
     const seller = req.user;
 
 
-
     let variants = [];
 
     if (variantsJson) {
@@ -31,8 +30,8 @@ export async function createProduct(req, res) {
     }
 
 
-
-    const productImagesCount = Number(productImageCount) || 0;
+    const productImagesCount =
+        Number(productImageCount) || 0;
 
     let imageCounts = [];
 
@@ -48,7 +47,6 @@ export async function createProduct(req, res) {
     }
 
 
-
     const uploadedImages = await Promise.all(
         (req.files || []).map(async (file) => {
             return await uploadFile({
@@ -59,39 +57,85 @@ export async function createProduct(req, res) {
     );
 
 
-
     let imageIndex = 0;
+    imageIndex += productImagesCount;
+
+    const preparedVariants = [];
+
+for (
+    let groupIndex = 0;
+    groupIndex < variants.length;
+    groupIndex++
+) {
 
     const productImages = uploadedImages
-        .slice(imageIndex, imageIndex + productImagesCount)
+        .slice(
+            imageIndex,
+            imageIndex + productImagesCount
+        )
         .map((image) => ({
             url: image.url,
         }));
 
     imageIndex += productImagesCount;
 
+    const preparedVariants = [];
 
+    let imageIndex = productImagesCount;
 
-    const preparedVariants = variants.map((variant, index) => {
-        const count = Number(imageCounts[index]) || 0;
+    for (let groupIndex = 0; groupIndex < variants.length; groupIndex++) {
+        const group = variants[groupIndex];
+
+        const count =
+            Number(imageCounts[groupIndex]) || 0;
 
         const variantImages = uploadedImages
-            .slice(imageIndex, imageIndex + count)
+            .slice(
+                imageIndex,
+                imageIndex + count
+            )
             .map((image) => ({
                 url: image.url,
             }));
 
         imageIndex += count;
 
-        return {
-            ...variant,
-            stock: Number(variant.stock) || 0,
-            attributes: variant.attributes || {},
+      
+
+        if (
+            Array.isArray(group.sizes) &&
+            group.sizes.length > 0
+        ) {
+            group.sizes.forEach(({ size, stock }) => {
+                preparedVariants.push({
+                    attributes: {
+                        color: group.color || "",
+                        size: size || "",
+                    },
+
+                    stock: Number(stock) || 0,
+
+                    images: variantImages,
+                });
+            });
+
+            continue;
+        }
+
+        
+
+        preparedVariants.push({
+            attributes: {
+                color: group.color || "",
+            },
+
+            stock: Number(group.stock) || 0,
+
             images: variantImages,
-        };
-    });
+        });
+    }
 
-
+    
     const product = await productModel.create({
         title,
         description,
@@ -115,7 +159,7 @@ export async function createProduct(req, res) {
         success: true,
         product,
     });
-}
+}};
 
 export async function getSellerProducts(req, res) {
     const seller = req.user;
