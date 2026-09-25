@@ -9,21 +9,24 @@ export const addItemToCartApi = async ({
     productId,
     variantId,
     quantity,
+    size
 }) => {
     const response = await cartApiInstance.post(
         `/add/${productId}`,
         {
             variantId,
+            size,
             quantity,
         }
     );
 
     return response.data;
 };
-// export const getCartApi=async()=>{
-//     const response =await cartApiInstance.get("/")
-//     return response.data
-// }
+export const getCartApi = async () => {
+    const response = await cartApiInstance.get("/");
+
+    return response.data;
+};
 
 // export const updateCartApi=async(item)=>{
 //     const response =await cartApiInstance.put("/")

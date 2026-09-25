@@ -13,7 +13,8 @@ const ProductDetails = () => {
     } = useProduct();
 
     const {
-        handleAddItem
+        handleAddItem,
+        handleGetCart,
     } = useCart()
 
     const [product, setProduct] = useState(null);
@@ -249,6 +250,7 @@ const ProductDetails = () => {
             const data = await handleAddItem({
                 productId: product._id,
                 variantId: concreteVariant?._id || null,
+                size: selectedSize,
                 quantity,
             });
 
@@ -257,6 +259,20 @@ const ProductDetails = () => {
             console.error(
                 "ADD TO CART ERROR:",
                 error.response?.data
+            );
+        }
+    };
+
+    const testGetCart = async () => {
+        try {
+            const cart = await handleGetCart();
+
+            console.log("CART FROM DATABASE:", cart);
+            console.log("CART ITEMS:", cart.items);
+        } catch (error) {
+            console.error(
+                "GET CART ERROR:",
+                error.response?.data || error
             );
         }
     };
@@ -606,6 +622,10 @@ const ProductDetails = () => {
 
                             >
                                 Add To Cart
+                            </button>
+
+                            <button onClick={testGetCart}>
+                                Test Get Cart
                             </button>
 
                             <button

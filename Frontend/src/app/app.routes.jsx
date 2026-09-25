@@ -9,6 +9,7 @@ import Protected from "../features/auth/components/Protected";
 import Home from "../features/products/pages/Home";
 import ProductDetails from "../features/products/pages/ProductDetails";
 import SellerProuductEdit from "../features/products/pages/SellerProuductEdit";
+import Cart from "../features/cart/pages/Cart";
 
 export const routes = createBrowserRouter([
   {
@@ -29,6 +30,15 @@ export const routes = createBrowserRouter([
   {
     path: "/products/:id",
     element: <ProductDetails />,
+  },
+
+  {
+    path: "/cart",
+    element: (
+      
+        <Cart />
+      
+    ),
   },
 
   {
@@ -70,4 +80,8 @@ export const routes = createBrowserRouter([
       },
     ],
   },
+
+
+
+
 ]);

@@ -4,7 +4,7 @@ import productModel from "../models/product.model.js";
 
 export const addToCart = async (req, res) => {
     const { productId } = req.params;
-    const { variantId = null, quantity = 1 } = req.body;
+    const { variantId = null, size, quantity = 1 } = req.body;
 
     const product = await productModel.findById(productId);
 
@@ -52,7 +52,8 @@ export const addToCart = async (req, res) => {
     const existingItem = cart.items.find(
         (item) =>
             item.product.toString() === productId &&
-            (item.variant?.toString() || null) === variantId
+            (item.variant?.toString() || null) === (variantId || null) &&
+            item.size === size
     );
 
     if (existingItem) {
@@ -80,6 +81,7 @@ export const addToCart = async (req, res) => {
     cart.items.push({
         product: productId,
         variant: variantId || undefined,
+        size,
         quantity,
         price: product.price,
     });
