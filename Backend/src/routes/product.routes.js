@@ -24,6 +24,10 @@ const router = express.Router();
 router.get("/seller", authenticateSeller, getSellerProducts);
 router.post(
     "/",
+    (req, res, next) => {
+        console.log("🔥 PRODUCT ROUTE HIT");
+        next();
+    },
     authenticateSeller,
     upload.array("images", 30),
     createProductValidator,

@@ -2,164 +2,187 @@ import productModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.service.js";
 
 export async function createProduct(req, res) {
-    const {
-        title,
-        description,
-        priceAmount,
-        priceCurrency,
-        stock,
-        variants: variantsJson,
-        productImageCount,
-        variantImageCounts,
-    } = req.body;
+    console.log("🔥 CREATE PRODUCT CONTROLLER HIT");
 
-    const seller = req.user;
+    try {
+        const {
+            title,
+            description,
+            priceAmount,
+            priceCurrency,
+            stock,
+            variants: variantsJson,
+            productImageCount,
+            variantImageCounts,
+        } = req.body;
 
+        const seller = req.user;
 
-    let variants = [];
+        let variants = [];
 
-    if (variantsJson) {
-        try {
-            variants = JSON.parse(variantsJson);
-        } catch (error) {
-            return res.status(400).json({
-                message: "Invalid variants data",
-                success: false,
-            });
+        if (variantsJson) {
+            try {
+                variants = JSON.parse(variantsJson);
+            } catch (error) {
+                return res.status(400).json({
+                    message: "Invalid variants data",
+                    success: false,
+                });
+            }
         }
-    }
 
+        const productImagesCount =
+            Number(productImageCount) || 0;
 
-    const productImagesCount =
-        Number(productImageCount) || 0;
+        let imageCounts = [];
 
-    let imageCounts = [];
-
-    if (variantImageCounts) {
-        try {
-            imageCounts = JSON.parse(variantImageCounts);
-        } catch (error) {
-            return res.status(400).json({
-                message: "Invalid variant image data",
-                success: false,
-            });
+        if (variantImageCounts) {
+            try {
+                imageCounts = JSON.parse(variantImageCounts);
+            } catch (error) {
+                return res.status(400).json({
+                    message: "Invalid variant image data",
+                    success: false,
+                });
+            }
         }
-    }
 
+        console.log("🔥 FILE COUNT:", req.files?.length || 0);
+        console.log("🔥 STARTING IMAGE UPLOADS");
 
-    const uploadedImages = await Promise.all(
-        (req.files || []).map(async (file) => {
-            return await uploadFile({
-                buffer: file.buffer,
-                fileName: file.originalname,
-            });
-        })
-    );
+        const uploadedImages = await Promise.all(
+            (req.files || []).map(async (file) => {
+                console.log("📤 Uploading:", file.originalname);
 
+                const result = await uploadFile({
+                    buffer: file.buffer,
+                    fileName: file.originalname,
+                });
 
-    let imageIndex = 0;
-    imageIndex += productImagesCount;
+                console.log("✅ Uploaded:", file.originalname);
 
-    const preparedVariants = [];
+                return result;
+            })
+        );
 
-for (
-    let groupIndex = 0;
-    groupIndex < variants.length;
-    groupIndex++
-) {
+        console.log("🔥 ALL IMAGES UPLOADED");
 
-    const productImages = uploadedImages
-        .slice(
-            imageIndex,
-            imageIndex + productImagesCount
-        )
-        .map((image) => ({
-            url: image.url,
-        }));
+        // --------------------------------
+        // Product images
+        // --------------------------------
 
-    imageIndex += productImagesCount;
+        let imageIndex = 0;
 
-    const preparedVariants = [];
-
-    let imageIndex = productImagesCount;
-
-    for (let groupIndex = 0; groupIndex < variants.length; groupIndex++) {
-        const group = variants[groupIndex];
-
-        const count =
-            Number(imageCounts[groupIndex]) || 0;
-
-        const variantImages = uploadedImages
+        const productImages = uploadedImages
             .slice(
                 imageIndex,
-                imageIndex + count
+                imageIndex + productImagesCount
             )
             .map((image) => ({
                 url: image.url,
             }));
 
-        imageIndex += count;
+        imageIndex += productImagesCount;
 
-      
+        // --------------------------------
+        // Variant images + variants
+        // --------------------------------
 
-        if (
-            Array.isArray(group.sizes) &&
-            group.sizes.length > 0
+        const preparedVariants = [];
+
+        for (
+            let groupIndex = 0;
+            groupIndex < variants.length;
+            groupIndex++
         ) {
-            group.sizes.forEach(({ size, stock }) => {
-                preparedVariants.push({
-                    attributes: {
-                        color: group.color || "",
-                        size: size || "",
-                    },
+            const group = variants[groupIndex];
 
-                    stock: Number(stock) || 0,
+            const count =
+                Number(imageCounts[groupIndex]) || 0;
 
-                    images: variantImages,
+            const variantImages = uploadedImages
+                .slice(
+                    imageIndex,
+                    imageIndex + count
+                )
+                .map((image) => ({
+                    url: image.url,
+                }));
+
+            imageIndex += count;
+
+            if (
+                Array.isArray(group.sizes) &&
+                group.sizes.length > 0
+            ) {
+                group.sizes.forEach(({ size, stock }) => {
+                    preparedVariants.push({
+                        attributes: {
+                            color: group.color || "",
+                            size: size || "",
+                        },
+
+                        stock: Number(stock) || 0,
+
+                        images: variantImages,
+                    });
                 });
-            });
 
-            continue;
+                continue;
+            }
+
+            preparedVariants.push({
+                attributes: {
+                    color: group.color || "",
+                },
+
+                stock: Number(group.stock) || 0,
+
+                images: variantImages,
+            });
         }
 
-        
+        // --------------------------------
+        // Create product ONCE
+        // --------------------------------
 
-        preparedVariants.push({
-            attributes: {
-                color: group.color || "",
+        const product = await productModel.create({
+            title,
+            description,
+
+            price: {
+                amount: Number(priceAmount),
+                currency: priceCurrency,
             },
 
-            stock: Number(group.stock) || 0,
+            stock: Number(stock) || 0,
 
-            images: variantImages,
+            images: productImages,
+
+            variants: preparedVariants,
+
+            seller: seller._id,
+        });
+
+        console.log("✅ PRODUCT CREATED:", product._id);
+
+        return res.status(201).json({
+            message: "Product Created Successfully!!!",
+            success: true,
+            product,
+        });
+
+    } catch (error) {
+        console.error("❌ CREATE PRODUCT ERROR:", error);
+
+        return res.status(500).json({
+            message:
+                error.message ||
+                "Failed to create product",
+            success: false,
         });
     }
-
-    
-    const product = await productModel.create({
-        title,
-        description,
-
-        price: {
-            amount: Number(priceAmount),
-            currency: priceCurrency,
-        },
-
-        stock: Number(stock) || 0,
-
-        images: productImages,
-
-        variants: preparedVariants,
-
-        seller: seller._id,
-    });
-
-    return res.status(201).json({
-        message: "Product Created Successfully!!!",
-        success: true,
-        product,
-    });
-}};
+}
 
 export async function getSellerProducts(req, res) {
     const seller = req.user;
@@ -271,6 +294,8 @@ export async function updateProduct(req, res) {
         product,
     });
 }
+
+
 
 export async function uploadProductImage(req, res) {
     try {

@@ -17,9 +17,10 @@ export const validateAddToCart = [
         .isMongoId()
         .withMessage("Invalid VariantId"),
     body("size")
-        .isString()
-        .notEmpty()
-        .withMessage("Size is required"),
+    .optional({ values: "null" })
+    .isString()
+    .notEmpty()
+    .withMessage("Size is required"),
     body("quantity").optional().isInt({ min: 1 }).withMessage("Quantity must be atleast 1"),
     validateRequest
 ]
