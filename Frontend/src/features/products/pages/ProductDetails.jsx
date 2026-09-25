@@ -209,7 +209,7 @@ const ProductDetails = () => {
 
     let displaySizes = [];
 
-    if (variants.length > 0 && selectedColor) {
+    if (selectedColor && variants.length > 0) {
         const colorVariants = variants.filter((v) => {
             const vColor =
                 v.attributes instanceof Map
@@ -232,12 +232,20 @@ const ProductDetails = () => {
         });
 
         displaySizes = Array.from(sizesSet);
+
     } else if (variants.length === 0 && product.sizes) {
         displaySizes =
             product.sizes instanceof Map
                 ? Array.from(product.sizes.keys())
                 : Object.keys(product.sizes);
     }
+
+    const selectedProductSizeStock =
+        selectedSize && product.sizes
+            ? product.sizes instanceof Map
+                ? product.sizes.get(selectedSize)
+                : product.sizes[selectedSize]
+            : null;
 
     // =========================================
     // RESOLVE CONCRETE VARIANT
@@ -782,12 +790,12 @@ const ProductDetails = () => {
                             </div>
                         )}
 
-                        {/* SIZE */}
 
                         {/* SIZE */}
 
                         {displaySizes.length > 0 && (
                             <div className="mt-8">
+
                                 <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-sm font-semibold">
                                         Size
@@ -829,6 +837,14 @@ const ProductDetails = () => {
                                         </button>
                                     ))}
                                 </div>
+
+                                {/* REAL STOCK */}
+                                {selectedSize && selectedProductSizeStock !== null && (
+                                    <p className="mt-2 text-xs text-green-600">
+                                        ✓ {selectedProductSizeStock} in stock
+                                    </p>
+                                )}
+
                             </div>
                         )}
 
