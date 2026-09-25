@@ -28,6 +28,28 @@ export const getCartApi = async () => {
     return response.data;
 };
 
+export const updateCartItemApi = async ({
+    itemId,
+    quantity
+}) => {
+    const response = await cartApiInstance.patch(
+        `/update/${itemId}`,
+        {
+            quantity
+        }
+    );
+
+    return response.data;
+};
+
+export const removeCartItemApi = async (itemId) => {
+    const response = await cartApiInstance.delete(
+        `/remove/${itemId}`
+    );
+
+    return response.data;
+};
+
 // export const updateCartApi=async(item)=>{
 //     const response =await cartApiInstance.put("/")
 //     return response.data

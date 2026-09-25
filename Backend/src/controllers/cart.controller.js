@@ -110,3 +110,128 @@ export const getCart = async (req, res) => {
         cart
     })
 }
+
+
+export const updateCartItem = async (req, res) => {
+    const { itemId } = req.params;
+    const { quantity } = req.body;
+
+    if (!quantity || quantity < 1) {
+        return res.status(400).json({
+            message: "Quantity must be at least 1",
+            success: false,
+        });
+    }
+
+    const cart = await cartModel.findOne({
+        user: req.user._id,
+    });
+
+    if (!cart) {
+        return res.status(404).json({
+            message: "Cart not found",
+            success: false,
+        });
+    }
+
+    const cartItem = cart.items.id(itemId);
+
+    if (!cartItem) {
+        return res.status(404).json({
+            message: "Cart item not found",
+            success: false,
+        });
+    }
+
+    // Normal product
+    if (!cartItem.variant) {
+        cartItem.quantity = quantity;
+
+        await cart.save();
+
+        return res.status(200).json({
+            message: "Cart quantity updated successfully",
+            success: true,
+            cart,
+        });
+    }
+
+    // Variant product
+    const product = await productModel.findById(cartItem.product);
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found",
+            success: false,
+        });
+    }
+
+    const variant = product.variants?.id(cartItem.variant);
+
+    if (!variant) {
+        return res.status(400).json({
+            message: "Variant not found",
+            success: false,
+        });
+    }
+
+    const stock = variant.stock ?? 0;
+
+    if (stock <= 0) {
+        return res.status(400).json({
+            message: "Product is out of stock",
+            success: false,
+        });
+    }
+
+    if (quantity > stock) {
+        return res.status(400).json({
+            message: `Only ${stock} items left in stock`,
+            success: false,
+        });
+    }
+
+    cartItem.quantity = quantity;
+
+    await cart.save();
+
+    return res.status(200).json({
+        message: "Cart quantity updated successfully",
+        success: true,
+        cart,
+    });
+};
+
+export const removeCartItem = async (req, res) => {
+    const { itemId } = req.params;
+
+    const cart = await cartModel.findOne({
+        user: req.user._id,
+    });
+
+    if (!cart) {
+        return res.status(404).json({
+            message: "Cart not found",
+            success: false,
+        });
+    }
+
+    const cartItem = cart.items.id(itemId);
+
+    if (!cartItem) {
+        return res.status(404).json({
+            message: "Cart item not found",
+            success: false,
+        });
+    }
+
+    cartItem.deleteOne();
+
+    await cart.save();
+
+    return res.status(200).json({
+        message: "Cart item removed successfully",
+        success: true,
+        cart,
+    });
+};

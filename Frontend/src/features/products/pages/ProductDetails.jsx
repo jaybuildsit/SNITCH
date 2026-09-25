@@ -277,6 +277,48 @@ const ProductDetails = () => {
         }
     };
 
+    const testUpdate = async () => {
+        try {
+            const cart = await handleUpdateCartItem({
+                itemId: "YOUR_CART_ITEM_ID",
+                quantity: 2
+            });
+
+            console.log("UPDATED CART:", cart);
+        } catch (error) {
+            console.error(
+                "UPDATE CART ERROR:",
+                error.response?.data || error
+            );
+        }
+    };
+
+    const testRemove = async () => {
+        try {
+            const firstItem = cart?.items?.[0];
+
+            if (!firstItem) {
+                console.log("No cart items found");
+                return;
+            }
+
+            console.log("REMOVING ITEM:", firstItem._id);
+
+            const updatedCart = await handleRemoveCartItem(
+                firstItem._id
+            );
+
+            console.log("CART AFTER REMOVE:", updatedCart);
+
+            setCart(updatedCart);
+        } catch (error) {
+            console.error(
+                "REMOVE CART ERROR:",
+                error.response?.data || error
+            );
+        }
+    };
+
     const handleBuyNow = () => {
         if (!selectedSize) {
             alert("Please select a size");
@@ -624,9 +666,7 @@ const ProductDetails = () => {
                                 Add To Cart
                             </button>
 
-                            <button onClick={testGetCart}>
-                                Test Get Cart
-                            </button>
+                           
 
                             <button
                                 onClick={handleBuyNow}
