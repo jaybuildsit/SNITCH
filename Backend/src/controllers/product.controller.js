@@ -11,11 +11,16 @@ export async function createProduct(req, res) {
             priceAmount,
             priceCurrency,
             stock,
+            sizes: sizesJson,
             variants: variantsJson,
             productImageCount,
             variantImageCounts,
         } = req.body;
 
+        console.log("🔥🔥 SIZES RECEIVED BY BACKEND:", req.body.sizes);
+        console.log("🔥🔥 FULL BODY:", req.body);
+
+        
         const seller = req.user;
 
         let variants = [];
@@ -30,6 +35,21 @@ export async function createProduct(req, res) {
                 });
             }
         }
+        let sizes = {};
+
+        if (sizesJson) {
+            try {
+                sizes = JSON.parse(sizesJson);
+            } catch (error) {
+                return res.status(400).json({
+                    message: "Invalid sizes data",
+                    success: false,
+                });
+            }
+        }
+
+
+
 
         const productImagesCount =
             Number(productImageCount) || 0;
@@ -149,18 +169,14 @@ export async function createProduct(req, res) {
         const product = await productModel.create({
             title,
             description,
-
             price: {
                 amount: Number(priceAmount),
                 currency: priceCurrency,
             },
-
             stock: Number(stock) || 0,
-
+            sizes,
             images: productImages,
-
             variants: preparedVariants,
-
             seller: seller._id,
         });
 
@@ -227,6 +243,9 @@ export async function getAllProducts(req, res) {
 export async function getProductById(req, res) {
     const { productId } = req.params;
     const product = await productModel.findById(productId);
+
+    console.log("🔥 PRODUCT FROM DATABASE:", product);
+    console.log("🔥 PRODUCT SIZES FROM DATABASE:", product?.sizes);
 
     if (!product) {
         return res.status(404).json({

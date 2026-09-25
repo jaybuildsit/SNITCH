@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import priceSchema from "./price.schema.js"
+import priceSchema from "./price.schema.js";
 
 const productScheme = new mongoose.Schema({
     title: {
@@ -30,6 +30,14 @@ const productScheme = new mongoose.Schema({
         type: Number,
         default: 0
     },
+
+    // ✅ ADD PRODUCT-LEVEL SIZES HERE
+    sizes: {
+        type: Map,
+        of: Number,
+        default: {}
+    },
+
     variants: [
         {
             sku: {
@@ -54,12 +62,11 @@ const productScheme = new mongoose.Schema({
             },
             sizes: {
                 type: Map,
-                of: Number
+                of: Number,
+                default: {}
             },
             price: {
                 type: priceSchema,
-                // required:true
-
             }
         }
     ]

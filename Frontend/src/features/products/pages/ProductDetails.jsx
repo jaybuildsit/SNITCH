@@ -119,6 +119,10 @@ const ProductDetails = () => {
     }
 
     const variants = product.variants || [];
+    console.log("PRODUCT FROM BACKEND:", product);
+    console.log("PRODUCT SIZES:", product.sizes);
+    console.log("PRODUCT VARIANTS:", product.variants);
+
 
     const images =
         selectedColor && variants.length > 0
@@ -205,7 +209,7 @@ const ProductDetails = () => {
 
     let displaySizes = [];
 
-    if (selectedColor && variants.length > 0) {
+    if (variants.length > 0 && selectedColor) {
         const colorVariants = variants.filter((v) => {
             const vColor =
                 v.attributes instanceof Map
@@ -228,6 +232,11 @@ const ProductDetails = () => {
         });
 
         displaySizes = Array.from(sizesSet);
+    } else if (variants.length === 0 && product.sizes) {
+        displaySizes =
+            product.sizes instanceof Map
+                ? Array.from(product.sizes.keys())
+                : Object.keys(product.sizes);
     }
 
     // =========================================
