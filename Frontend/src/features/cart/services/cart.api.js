@@ -50,12 +50,8 @@ export const removeCartItemApi = async (itemId) => {
     return response.data;
 };
 
-// export const updateCartApi=async(item)=>{
-//     const response =await cartApiInstance.put("/")
-//     return response.data
-// }
+export const createCartOrder = async ()=>{
+    const response = await cartApiInstance.post("/payment/create/order");
 
-// export const deleteCartApi=async(item)=>{
-//     const response =await cartApiInstance.delete("/")
-//     return response.data
-// }
+    return response.data;
+};

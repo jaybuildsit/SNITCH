@@ -1,6 +1,7 @@
 import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
 import mongoose from "mongoose"
+import { createOrder } from "../services/payment.service.js";
 // import { stockVariant } from "../dao/product.dao.js"
 
 export const addToCart = async (req, res) => {
@@ -340,4 +341,19 @@ export const removeCartItem = async (req, res) => {
         cart,
     });
 };
+
+export const createOrderController = async (req, res) => {
+
+    const order = await createOrder({ amount: 1000, currency: "INR" })
+
+    return res.status(200).json({
+        message: "Order Created Successfully!!",
+        success:true,
+        order
+    })
+
+};
+
+
+
 

@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useCart } from "../hooks/UseCart";
 import { useRazorpay } from "react-razorpay";
+import { createCartOrder } from "../services/cart.api";
+import { useNavigate } from "react-router";
 
 const Cart = () => {
+
+    const user = useSelector((state) => state.auth.user);
+
     const {
         handleGetCart,
         handleUpdateCartItem,
         handleRemoveCartItem,
+        handleCreateCartOrder
     } = useCart();
 
     const { error, isLoading, Razorpay } = useRazorpay();
@@ -83,31 +90,37 @@ const Cart = () => {
         }
     };
 
-    const handlePayment = () => {
+    async function handleCheckout() {
+        const order = await handleCreateCartOrder();
+        console.log(order);
+
         const options = {
             key: "rzp_test_TgeB0HSHAcYW1Q",
-            amount: 50000, // Amount in paise
-            currency: "INR",
-            name: "Test Company",
+            amount: order.amount, // Amount in paise
+            currency: order.currency,
+            name: "SNITCH",
             description: "Test Transaction",
-            order_id: "order_9A33XWu170gUtm", // Generate order_id on server
+            order_id: order.id, // Generate order_id on server
             handler: (response) => {
                 console.log(response);
                 alert("Payment Successful!");
             },
             prefill: {
-                name: "John Doe",
-                email: "john.doe@example.com",
-                contact: "9999999999",
+                name: user.fullName,
+                email: user.email,
+                contact: user.contact,
             },
             theme: {
-                color: "#F37254",
+                color: "#528FF0",
             },
         };
 
         const razorpayInstance = new Razorpay(options);
         razorpayInstance.open();
-    };
+
+
+
+    }
 
     if (loading) {
         return (
@@ -400,8 +413,8 @@ const Cart = () => {
                             </div>
 
                             <button
-                            onClick={handlePayment}
-                             className="mt-8 flex h-14 w-full items-center justify-center bg-black text-xs font-medium uppercase tracking-[0.22em] text-white transition hover:bg-black/85">
+                                onClick={handleCheckout}
+                                className="mt-8 flex h-14 w-full items-center justify-center bg-black text-xs font-medium uppercase tracking-[0.22em] text-white transition hover:bg-black/85">
                                 Proceed to Checkout
                             </button>
 
