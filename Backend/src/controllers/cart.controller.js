@@ -1,5 +1,6 @@
 import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
+import mongoose from "mongoose"
 // import { stockVariant } from "../dao/product.dao.js"
 
 export const addToCart = async (req, res) => {
@@ -98,54 +99,121 @@ export const addToCart = async (req, res) => {
 
 
 export const getCart = async (req, res) => {
-    const user = req.user;
+    try {
+        const user = req.user;
 
-    let cart = await cartModel
-        .findOne({ user: user._id })
-        .populate("items.product");
+        let cart = await cartModel.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(user._id),
+                },
+            },
 
-    if (!cart) {
-        cart = await cartModel.create({
-            user: user._id,
-        });
-    }
+            {
+                $unwind: {
+                    path: "$items",
+                },
+            },
 
-    const cartData = cart.toObject({
-        flattenMaps: true,
-    });
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.product",
+                    foreignField: "_id",
+                    as: "items.product",
+                },
+            },
 
-    cartData.items = cartData.items.map((item) => {
-        if (item.variant && item.product?.variants) {
-            const variant = item.product.variants.find(
-                (variant) =>
-                    variant._id.toString() === item.variant.toString()
-            );
+            {
+                $unwind: {
+                    path: "$items.product",
+                },
+            },
 
-            if (variant) {
-                return {
-                    ...item,
-                    variant,
-                };
-            }
+            {
+                $unwind: {
+                    path: "$items.product.variants",
+                },
+            },
+
+            {
+                $match: {
+                    $expr: {
+                        $eq: [
+                            "$items.variant",
+                            "$items.product.variants._id",
+                        ],
+                    },
+                },
+            },
+
+            {
+                $addFields: {
+                    itemPrice: {
+                        price: {
+                            $multiply: [
+                                "$items.quantity",
+                                "$items.product.price.amount"
+                            ],
+                        },
+                        currency:
+                            "$items.product.price.currency",
+                    },
+                },
+            },
+
+            {
+                $group: {
+                    _id: "$_id",
+
+                    totalPrice: {
+                        $sum: "$itemPrice.price",
+                    },
+
+                    currency: {
+                        $first: "$itemPrice.currency",
+                    },
+
+                    items: {
+                        $push: "$items",
+                    },
+                },
+            },
+        ]);
+
+        // Aggregation returns an array
+        if (!cart.length) {
+            cart = await cartModel.create({
+                user: user._id,
+            });
+        } else {
+            cart = cart[0];
         }
 
-        return item;
-    });
+        console.log(
+            "CART ITEMS:",
+            cart.items?.map((item) => ({
+                product: item.product?.title,
+                variant: item.variant,
+                size: item.size,
+            }))
+        );
 
-    console.log(
-        "CART ITEMS:",
-        cartData.items.map((item) => ({
-            product: item.product?.title,
-            variant: item.variant,
-            size: item.size,
-        }))
-    );
+        return res.status(200).json({
+            message: "Cart Fetched Successfully",
+            success: true,
+            cart,
+        });
 
-    return res.status(200).json({
-        message: "Cart Fetched Successfully",
-        success: true,
-        cart: cartData,
-    });
+    } catch (error) {
+        console.error("GET CART ERROR:", error);
+
+        return res.status(500).json({
+            message: "Failed to fetch cart",
+            success: false,
+            error: error.message,
+        });
+    }
 };
 
 
@@ -272,3 +340,4 @@ export const removeCartItem = async (req, res) => {
         cart,
     });
 };
+
