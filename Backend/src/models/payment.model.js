@@ -28,6 +28,7 @@ const paymentSchema = new mongoose.Schema({
             title: String,
             productId: mongoose.Schema.Types.ObjectId,
             variantId: mongoose.Schema.Types.ObjectId,
+            size: String,
             quantity: Number,
             images: [{ url: String }],
             description: String,

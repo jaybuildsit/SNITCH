@@ -4,8 +4,9 @@ import mongoose from "mongoose"
 import { createOrder } from "../services/payment.service.js";
 import { getCartDetails } from "../dao/cart.dao.js"
 import paymentModel from "../models/payment.model.js"
-import { validatePaymentverification } from "../node_modules/razorpay/dist/utils/razorpay-utils.js"
-import { config } from "dotenv";
+import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
+// import { config } from "dotenv";
+import { config } from "../config/config.js";
 
 
 
@@ -306,6 +307,7 @@ export const createOrderController = async (req, res) => {
                 title: item.product.title,
                 productId: item.product._id,
                 variantId: item.variant,
+                size: item.size,
                 quantity: item.quantity,
                 images: item.product.variants.images || item.product.images,
                 description: item.product.description,
@@ -354,12 +356,34 @@ export const verifyOrderController = async (req, res) => {
         })
     }
 
-    const isPaymentValid = validatePaymentverification({
+    const isPaymentValid = validatePaymentVerification({
         order_id: razorpay_order_id,
         payment_id: razorpay_payment_id,
     }, razorpay_signature, config.RAZORPAY_KEY_SECRET)
 
-    if
+    if (!isPaymentValid) {
+        payment.status = "failed"
+        await payment.save()
+
+        return res.status(400).json({
+            message: "Payment Verification Failed",
+            success: false
+        })
+    }
+
+    payment.status = "paid"
+
+    payment.razorpay.paymentId = razorpay_payment_id
+    payment.razorpay.signature = razorpay_signature
+
+    await payment.save()
+
+    return res.status(200).json({
+        message: "Payment verified Successfully!!!",
+        success: true,
+        payment
+    })
+
 
 
 }

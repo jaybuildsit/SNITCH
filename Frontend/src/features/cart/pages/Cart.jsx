@@ -7,13 +7,16 @@ import { useNavigate } from "react-router";
 
 const Cart = () => {
 
+    const navigate = useNavigate();
+
     const user = useSelector((state) => state.auth.user);
 
     const {
         handleGetCart,
         handleUpdateCartItem,
         handleRemoveCartItem,
-        handleCreateCartOrder
+        handleCreateCartOrder,
+        handleVerifyCartOrder
     } = useCart();
 
     const { error, isLoading, Razorpay } = useRazorpay();
@@ -101,9 +104,22 @@ const Cart = () => {
             name: "SNITCH",
             description: "Test Transaction",
             order_id: order.id, // Generate order_id on server
-            handler: (response) => {
-                console.log(response);
-                alert("Payment Successful!");
+            handler: async (response) => {
+                const data = await handleVerifyCartOrder({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                });
+                if (data?.success) {
+                    navigate(
+                        `/order-placed?order_id=${response.razorpay_order_id}`,
+                        {
+                            state: {
+                                payment: data.payment
+                            }
+                        }
+                    );
+                }
             },
             prefill: {
                 name: user.fullName,
