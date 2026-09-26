@@ -23,4 +23,6 @@ router.delete(
 
 router.post('/payment/create/order',authenticateUser,createOrderController)
 
+router.post('/payment/verify/order',authenticateUser,)
+
 export default router;
